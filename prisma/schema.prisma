@@ -1,0 +1,381 @@
+// DataVault — Privacy-First AI Marketplace
+// Prisma schema (SQLite for sandbox dev, PostgreSQL via env in Docker)
+// NOTE: enums are stored as validated strings for SQLite portability.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────── Identity & RBAC ───────────────────────────────
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  passwordHash   String
+  // ADMIN | ORG_ADMIN | ML_OPERATOR | PARTICIPANT | VIEWER
+  role           String   @default("VIEWER")
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  walletAddress  String?
+  avatarSeed     String?
+  lastLoginAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Organization {
+  id                String   @id @default(cuid())
+  name              String
+  slug              String   @unique
+  // Hospital | Bank | Agriculture | Research | Enterprise | Insurance | Government
+  type              String
+  industry          String
+  location          String
+  // PENDING | ACTIVE | SUSPENDED
+  status            String   @default("PENDING")
+  // UNVERIFIED | VERIFIED
+  verification      String   @default("UNVERIFIED")
+  description       String?
+  walletId          String?  @unique
+  wallet            Wallet?  @relation(fields: [walletId], references: [id])
+  users             User[]
+  datasets          Dataset[]
+  participants      Participant[]
+  contributions     Contribution[]
+  rewards           Reward[]
+  privacyEvents     PrivacyEvent[]
+  accessRequests    AccessRequest[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Wallet {
+  id            String   @id @default(cuid())
+  address       String   @unique
+  org           Organization?
+  balance       Float    @default(0)
+  pending       Float    @default(0)
+  claimed       Float    @default(0)
+  totalEarned   Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ─────────────────────────────── Datasets (metadata only — raw data stays local) ───────────────────────────────
+
+model Dataset {
+  id                    String   @id @default(cuid())
+  name                  String
+  ownerId               String
+  owner                 Organization @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  industry              String
+  // HEALTHCARE | FINANCE | AGRICULTURE
+  domain                String
+  sampleCount           Int
+  featureCount          Int
+  targetName            String
+  // RESTRICTED | CONFIDENTIAL | INTERNAL
+  privacyClassification String   @default("RESTRICTED")
+  // LOCAL_ONLY | ENCRYPTED_UPDATES_ONLY | PARTICIPATING | ARCHIVED
+  status                String   @default("LOCAL_ONLY")
+  storagePath           String?  // participant-local path (simulated environment)
+  metadataHash          String?
+  lastRoundNumber       Int      @default(0)
+  isDemo                Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+// ─────────────────────────────── Models & federation ───────────────────────────────
+
+model Model {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  useCase         String
+  industry        String
+  // CLASSIFICATION | REGRESSION
+  taskType        String   @default("CLASSIFICATION")
+  framework       String   @default("Custom MLP")
+  // CREATED | TRAINING | ACTIVE | ARCHIVED
+  status          String   @default("CREATED")
+  // DEMO | ENCRYPTION
+  privacyMode     String   @default("DEMO")
+  description     String?
+  currentVersion  String   @default("v1.0")
+  baselineAccuracy Float   @default(0)
+  currentAccuracy Float   @default(0)
+  latestMetrics   String?  // JSON
+  featureNames    String?  // JSON array
+  modelHash       String?
+  rounds          FederatedRound[]
+  versions        ModelVersion[]
+  participants    Participant[]
+  listing         MarketplaceListing?
+  createdById     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ModelVersion {
+  id            String   @id @default(cuid())
+  modelId       String
+  model         Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  version       String
+  roundId       String?
+  roundNumber   Int      @default(0)
+  accuracy      Float    @default(0)
+  metrics       String?  // JSON
+  modelHash     String
+  participantCount Int   @default(0)
+  privacyMode   String   @default("DEMO")
+  weights       String?  // serialized weights (global model artifacts, shareable)
+  createdAt     DateTime @default(now())
+}
+
+model FederatedRound {
+  id              String   @id @default(cuid())
+  modelId         String
+  model           Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  roundNumber     Int
+  // PENDING | RUNNING | COMPLETED | FAILED
+  status          String   @default("PENDING")
+  config          String?  // JSON: epochs, lr, batch size, privacy mode
+  participants    String?  // JSON array of participant ids
+  aggregateMetrics String? // JSON global metrics
+  metricsBefore   Float    @default(0)
+  metricsAfter    Float    @default(0)
+  improvement     Float    @default(0)
+  durationMs      Int      @default(0)
+  encryptedUpdates Int    @default(0)
+  error           String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  runs            TrainingRun[]
+  updates         ModelUpdate[]
+  contributions   Contribution[]
+  rewards         Reward[]
+}
+
+model Participant {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  organization        Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  modelId             String
+  model               Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  datasetId           String?
+  // ACTIVE | IDLE | SUSPENDED
+  status              String   @default("ACTIVE")
+  roundsParticipated  Int      @default(0)
+  lifetimeScore        Float   @default(0)
+  lastRoundAt         DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model TrainingRun {
+  id             String   @id @default(cuid())
+  roundId        String
+  round          FederatedRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  participantId  String
+  organizationName String
+  // RUNNING | COMPLETED | FAILED
+  status         String   @default("RUNNING")
+  epochs         Int      @default(0)
+  samples        Int      @default(0)
+  localMetrics   String?  // JSON
+  durationMs     Int      @default(0)
+  startedAt      DateTime @default(now())
+  completedAt    DateTime?
+}
+
+// What actually leaves a participant environment: encrypted model updates ONLY
+model ModelUpdate {
+  id             String   @id @default(cuid())
+  roundId        String
+  round          FederatedRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  participantId  String
+  organizationName String
+  sampleCount    Int
+  updateHash     String
+  encrypted      Boolean  @default(false)
+  privacyMode    String   @default("DEMO")
+  sizeBytes      Int      @default(0)
+  updateNorm     Float    @default(0)
+  payload        String?  // encrypted/serialized delta (weights only — never raw data)
+  metrics        String?  // JSON local eval metrics
+  submittedAt    DateTime @default(now())
+}
+
+// ─────────────────────────────── Privacy ───────────────────────────────
+
+model PrivacyEvent {
+  id          String   @id @default(cuid())
+  type        String   // UPDATE_ENCRYPTED | SECURE_AGGREGATION | RAW_ACCESS_BLOCKED | POLICY_APPLIED ...
+  organizationId String?
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  roundId     String?
+  modelName   String?
+  description String
+  metadata    String?  // JSON
+  createdAt   DateTime @default(now())
+}
+
+// ─────────────────────────────── Contributions & rewards ───────────────────────────────
+
+model Contribution {
+  id               String   @id @default(cuid())
+  roundId          String
+  round            FederatedRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  participantId    String
+  organizationId   String
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  roundNumber      Int
+  sampleCount      Int
+  rawScore         Float
+  normalizedScore  Float
+  sampleShare      Float    @default(0)
+  qualityScore     Float    @default(0)
+  improvementScore Float    @default(0)
+  participationScore Float  @default(0)
+  lifetimeScore    Float    @default(0)
+  createdAt        DateTime @default(now())
+}
+
+model Reward {
+  id            String   @id @default(cuid())
+  roundId       String
+  round         FederatedRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  participantId String
+  organizationId String
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  roundNumber   Int
+  amount        Float    // DATA tokens
+  // PENDING | AVAILABLE | CLAIMED
+  status        String   @default("AVAILABLE")
+  score         Float
+  txHash        String?
+  claimedAt     DateTime?
+  createdAt     DateTime @default(now())
+}
+
+// ─────────────────────────────── Blockchain (local hash-chain ledger) ───────────────────────────────
+
+model BlockchainBlock {
+  id          String   @id @default(cuid())
+  number      Int      @unique
+  timestamp   DateTime @default(now())
+  txCount     Int      @default(0)
+  prevHash    String
+  hash        String
+  nonce       Int      @default(0)
+  transactions BlockchainTransaction[]
+}
+
+model BlockchainTransaction {
+  id          String   @id @default(cuid())
+  hash        String   @unique
+  blockId     String?
+  block       BlockchainBlock? @relation(fields: [blockId], references: [id])
+  fromAddress String   @default("0x0")
+  toAddress   String
+  // REGISTER_PARTICIPANT | RECORD_CONTRIBUTION | ALLOCATE_REWARD | CLAIM_REWARD | RECORD_PROOF
+  action      String
+  amount      Float    @default(0)
+  roundNumber Int?
+  modelName   String?
+  participantName String?
+  metadata    String?  // JSON
+  status      String   @default("CONFIRMED")
+  timestamp   DateTime @default(now())
+}
+
+// ─────────────────────────────── Audit (hash-chained) ───────────────────────────────
+
+model AuditLog {
+  id              String   @id @default(cuid())
+  seq             Int      @unique @default(0)
+  actor           String
+  actorRole       String?
+  organization    String?
+  eventType       String
+  resource        String?
+  status          String   @default("SUCCESS")
+  metadata        String?  // JSON
+  entryHash       String
+  prevHash        String
+  blockchainTxHash String?
+  createdAt       DateTime @default(now())
+}
+
+// ─────────────────────────────── Marketplace ───────────────────────────────
+
+model MarketplaceListing {
+  id          String   @id @default(cuid())
+  modelId     String   @unique
+  model       Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  useCase     String
+  industry    String
+  performance Float
+  // FEDERATED_AVERAGING | SECURE_AGGREGATION | HE + SECURE_AGG
+  privacyMethod String
+  trainingRounds Int
+  price       Float    @default(0) // DATA tokens or "collaboration" model
+  // OPEN | REQUEST_ACCESS | INVITE_ONLY
+  accessPolicy String  @default("REQUEST_ACCESS")
+  participantOrgs String? // JSON array of names
+  // ACTIVE | PENDING | ARCHIVED
+  status      String   @default("ACTIVE")
+  accessRequests AccessRequest[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AccessRequest {
+  id          String   @id @default(cuid())
+  listingId   String
+  listing     MarketplaceListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  requesterName String
+  // PENDING | APPROVED | REJECTED
+  status      String   @default("PENDING")
+  message     String?
+  resolvedAt  DateTime?
+  createdAt   DateTime @default(now())
+}
+
+// ─────────────────────────────── System ───────────────────────────────
+
+model SystemSetting {
+  key        String   @id
+  value      String
+  description String?
+  updatedAt  DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  // ROUND_COMPLETED | REWARD_ALLOCATED | MODEL_IMPROVED | ACCESS_REQUESTED | BLOCKCHAIN_RECORDED | SYSTEM
+  type      String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model DemoRunLog {
+  id        String   @id @default(cuid())
+  action    String
+  detail    String?
+  createdAt DateTime @default(now())
+}

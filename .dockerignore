@@ -1,0 +1,40 @@
+# DataVault web build context — keep the image small & deterministic.
+# NOTE: contracts/ and services/ have their own build contexts + Dockerfiles.
+
+# deps & build artifacts (reinstalled inside the image)
+node_modules
+.next
+out
+build
+contracts
+services
+mini-services
+tests
+examples
+
+# runtime state (generated at runtime, lives on compose volumes)
+db
+data
+
+# git & dev tooling
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+*.log
+dev.log
+server.log
+
+# sandbox / agent artifacts not needed for the image
+tool-results
+upload
+download
+agent-ctx
+worklog.md
+Caddyfile
+docker-compose.yml
+Dockerfile
+.dockerignore
+docs
+README.md

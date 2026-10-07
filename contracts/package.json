@@ -1,0 +1,24 @@
+{
+  "name": "datavault-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DataVault — Solidity contribution & reward ledger (DataVaultRewards.sol) with the full Hardhat toolchain: tests, local node, deploy + demo-seed scripts, optional Polygon Amoy deployment.",
+  "license": "MIT",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node --hostname 0.0.0.0",
+    "clean": "hardhat clean",
+    "console": "hardhat console",
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:amoy": "hardhat run scripts/deploy.js --network polygonAmoy",
+    "seed:local": "hardhat run scripts/seed-demo.js --network localhost"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "chai": "^4.4.1",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.4",
+    "hardhat": "^2.22.17"
+  }
+}

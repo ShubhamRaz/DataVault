@@ -1,0 +1,2667 @@
+You are a senior full-stack architect, AI/ML engineer, privacy-preserving ML engineer, blockchain developer, DevOps engineer, UI/UX designer, and security engineer.
+
+Build a complete, production-structured hackathon MVP called **DataVault — Privacy-First AI Marketplace**.
+
+Do NOT create only a prototype UI, static dashboard, mock API, or disconnected demo. Build the complete project with a working end-to-end flow where the frontend, backend, federated-learning service, privacy layer, database, blockchain layer, reward system, and audit system are actually connected.
+
+The project must be runnable locally with Docker and must include realistic synthetic/demo data so the entire platform can be demonstrated without real sensitive information.
+
+==================================================
+1. PRODUCT VISION
+==================================================
+
+DataVault is a privacy-first AI collaboration marketplace.
+
+Organizations have valuable data but cannot directly share raw data because of:
+
+- privacy regulations
+- security concerns
+- competitive sensitivity
+- data ownership
+- legal/compliance restrictions
+- data siloing
+
+DataVault allows multiple organizations to collaboratively train AI models without transferring their raw datasets to a central server.
+
+Core principle:
+
+RAW DATA NEVER LEAVES THE DATA OWNER.
+
+Instead:
+
+1. A global model is created.
+2. The global model is distributed to participating organizations.
+3. Each organization trains the model locally.
+4. Only model updates are produced.
+5. Updates are privacy-protected/encrypted.
+6. A secure aggregation layer combines updates.
+7. A new global model is generated.
+8. Contribution metrics are recorded.
+9. Blockchain records contribution proofs.
+10. Smart-contract logic calculates rewards.
+11. Participants receive DataVault tokens/reward points.
+12. Dashboards show model performance, privacy status, contributions, rewards, and audit events.
+
+The hackathon MVP should demonstrate this concept using synthetic datasets.
+
+==================================================
+2. IMPORTANT IMPLEMENTATION RULES
+==================================================
+
+Build a REAL working MVP.
+
+Do NOT:
+
+- create fake statistics that are presented as real results
+- create buttons that do nothing
+- hardcode dashboard values when those values can come from APIs
+- create fake blockchain transactions
+- upload raw datasets to the central aggregator
+- expose participant raw training data to the server
+- leave TODO placeholders
+- leave major features disconnected
+- generate only frontend screens
+- claim legal/regulatory certification
+
+The system may use simulation where production-grade cryptographic infrastructure would be excessive for a hackathon, but the architecture and API boundaries must match the real privacy-preserving design.
+
+Clearly label the system:
+
+"Research / Hackathon Demonstration"
+
+Do not claim:
+
+"HIPAA compliant"
+"DPDP Act certified"
+"medically validated"
+"production secure"
+
+Instead show:
+
+"Privacy-preserving architecture designed to minimize raw-data exposure."
+
+For healthcare, use only synthetic patient records.
+
+==================================================
+3. PROJECT NAME / BRAND
+==================================================
+
+Name:
+
+DataVault
+
+Tagline:
+
+"Train Together. Share Nothing."
+
+Alternative headline:
+
+"Privacy-First AI Collaboration Marketplace"
+
+Brand personality:
+
+- trustworthy
+- futuristic
+- enterprise
+- privacy-focused
+- AI-native
+- financial/technical
+- premium SaaS
+
+Create a professional visual identity using:
+
+- dark/navy foundation
+- subtle blue/cyan/teal accents
+- glassmorphism only where appropriate
+- clean cards
+- strong typography
+- professional enterprise analytics style
+- subtle blockchain/network visualization
+- privacy/security visual indicators
+
+Avoid excessive neon, gaming aesthetics, or crypto-casino styling.
+
+==================================================
+4. CORE DEMO SCENARIO
+==================================================
+
+The main demo must be:
+
+"Federated Cancer Prediction Network"
+
+Participants:
+
+Hospital A
+Hospital B
+Hospital C
+
+Each hospital possesses a separate synthetic cancer dataset.
+
+Important:
+
+The raw datasets must physically remain inside simulated hospital/local training environments.
+
+Example:
+
+hospital-a/data/
+hospital-b/data/
+hospital-c/data/
+
+The central server must NOT directly receive these raw datasets.
+
+Each hospital locally trains the same model.
+
+Use a practical synthetic classification dataset.
+
+Example target:
+
+Cancer Risk Prediction
+
+Features can include synthetic values such as:
+
+- age
+- BMI
+- blood pressure
+- glucose
+- tumor size
+- cell texture score
+- cell radius
+- family risk score
+- smoking indicator
+- other synthetic biomarkers
+
+Target:
+
+0 = lower risk
+1 = higher risk
+
+Do not use real patient information.
+
+The demo should show:
+
+Hospital A local accuracy
+Hospital B local accuracy
+Hospital C local accuracy
+
+Then:
+
+Global model accuracy before federation
+
+vs.
+
+Global model accuracy after federation
+
+The system should visualize the improvement.
+
+==================================================
+5. THREE-LAYER PRIVACY ARCHITECTURE
+==================================================
+
+Implement the following architecture.
+
+--------------------------------
+LAYER 1 — FEDERATED LEARNING
+--------------------------------
+
+Implement federated learning using Python.
+
+Preferred approach:
+
+PyTorch-based custom Federated Averaging implementation OR TensorFlow Federated if the environment remains stable.
+
+The architecture must support:
+
+- global model
+- participant local models
+- local training
+- local model updates
+- FedAvg aggregation
+- round-based training
+- configurable number of rounds
+- participant selection
+- training metrics
+- model versioning
+
+Example:
+
+Round 1
+Global model → Hospital A
+Global model → Hospital B
+Global model → Hospital C
+
+Local training occurs independently.
+
+Hospital A → encrypted model update
+Hospital B → encrypted model update
+Hospital C → encrypted model update
+
+Aggregator → secure aggregation → Global Model v2
+
+Then repeat.
+
+Use actual model weights/gradients rather than merely displaying simulated numbers.
+
+--------------------------------
+LAYER 2 — PRIVACY COMPUTING
+--------------------------------
+
+Implement a privacy layer using TenSEAL where feasible.
+
+Use homomorphic encryption to demonstrate encryption of model update vectors.
+
+Flow:
+
+local model
+→ calculate update
+→ serialize update
+→ encrypt update
+→ send encrypted update
+→ secure aggregation
+→ decrypted/processed aggregate where appropriate
+→ global model
+
+Also implement a secure aggregation abstraction.
+
+Create interfaces such as:
+
+PrivacyEngine
+EncryptionService
+SecureAggregator
+
+Allow the project to have:
+
+DEMO MODE
+
+and
+
+ENCRYPTION MODE
+
+Demo mode:
+- faster
+- deterministic
+- suitable for live hackathon demonstrations
+
+Encryption mode:
+- TenSEAL CKKS encryption for selected vectors/weights
+
+Do not pretend that encrypting the entire neural network is trivial.
+
+Document exactly which tensors are encrypted.
+
+Show users:
+
+Raw Data: NOT SHARED
+Model Update: SHARED
+Encryption: ENABLED
+Secure Aggregation: ENABLED
+
+--------------------------------
+LAYER 3 — BLOCKCHAIN / INCENTIVES
+--------------------------------
+
+Implement blockchain-based contribution tracking.
+
+Use Solidity smart contracts.
+
+The preferred architecture should support:
+
+- local blockchain development
+- Hardhat/Foundry compatible workflow
+- optional Polygon testnet configuration
+
+Do not require real funds for the default demo.
+
+Create:
+
+DataVaultRewards.sol
+
+The contract should support concepts such as:
+
+- participant registration
+- contribution recording
+- contribution score
+- reward allocation
+- reward claims
+- round identifier
+- model identifier
+- contribution proof/hash
+- participant wallet address
+
+Example reward logic:
+
+participant_reward =
+round_reward_pool × normalized_contribution_score
+
+Contribution score can be based on:
+
+- number of samples
+- local training quality
+- training participation
+- useful update contribution
+- model improvement contribution
+
+Keep the reward calculation transparent.
+
+==================================================
+6. TOKEN / REWARD SYSTEM
+==================================================
+
+Create a DataVault reward token or points system.
+
+For hackathon safety and simplicity, support:
+
+DATA token
+
+Example:
+
+100 DATA
+250 DATA
+1,240 DATA
+
+The frontend must display:
+
+Total Earned
+Available Balance
+Pending Rewards
+Claimed Rewards
+Contribution Score
+Training Rounds Participated
+
+Create a Rewards page.
+
+Show:
+
+Reward history
+Round
+Organization
+Contribution
+Reward
+Transaction hash
+Status
+
+Use blockchain transaction hashes when blockchain mode is enabled.
+
+When local demo mode is used, clearly label blockchain as:
+
+"Local Test Network"
+
+==================================================
+7. MAIN USER TYPES
+==================================================
+
+Implement RBAC.
+
+Roles:
+
+1. PLATFORM ADMIN
+2. ORGANIZATION ADMIN
+3. DATA SCIENTIST / ML OPERATOR
+4. PARTICIPANT
+5. MARKETPLACE VIEWER
+
+Organization types:
+
+- Hospital
+- Bank
+- Agricultural Organization
+- Research Institution
+- Enterprise
+
+==================================================
+8. APPLICATIONS / DASHBOARDS
+==================================================
+
+Build one unified application with role-based dashboards.
+
+Main routes:
+
+/login
+/register
+/dashboard
+/organizations
+/models
+/models/[id]
+/federation
+/federation/[round]
+/privacy
+/blockchain
+/rewards
+/marketplace
+/datasets
+/audit
+/settings
+/admin
+
+==================================================
+9. LANDING PAGE
+==================================================
+
+Create a premium startup landing page.
+
+Sections:
+
+Hero:
+
+"Train AI together.
+Keep your data."
+
+Subheadline:
+
+"DataVault enables organizations to collaboratively build AI models without sharing raw data."
+
+CTA buttons:
+
+"Launch Demo"
+
+"Explore Architecture"
+
+"View Live Network"
+
+Then sections:
+
+Problem
+
+Why Data Silos Matter
+
+How DataVault Works
+
+Federated Learning
+
+Privacy Computing
+
+Blockchain Incentives
+
+Use Cases
+
+Healthcare
+
+Finance
+
+Agriculture
+
+Architecture diagram
+
+Security / Privacy section
+
+Marketplace concept
+
+Rewards section
+
+Demo statistics
+
+Final CTA
+
+Footer
+
+The landing page must feel like a real AI infrastructure startup.
+
+==================================================
+10. GLOBAL DASHBOARD
+==================================================
+
+Create an impressive enterprise dashboard.
+
+Show live data from backend APIs.
+
+KPIs:
+
+Organizations
+Active Models
+Federation Rounds
+Encrypted Updates
+Total Contributions
+Rewards Distributed
+Privacy Events
+Model Accuracy
+
+Example cards:
+
+Organizations
+12
+
+Active Models
+7
+
+Federation Rounds
+48
+
+Encrypted Updates
+1,284
+
+Do not hardcode these values.
+
+Seed them in the database and retrieve via APIs.
+
+Dashboard visualizations:
+
+- federation activity
+- model accuracy progression
+- organization contribution
+- rewards distribution
+- network activity
+- privacy events
+- blockchain transactions
+
+Use Recharts or another stable charting library.
+
+==================================================
+11. ORGANIZATION MANAGEMENT
+==================================================
+
+Create organization pages.
+
+Organization card:
+
+Name
+Industry
+Location
+Verification
+Active Models
+Contribution Score
+Training Rounds
+Reward Balance
+
+Example organizations:
+
+Apollo Demo Hospital
+AIIMS Demo Center
+Max Demo Research Lab
+
+These are entirely synthetic demo organizations.
+
+Organization detail page:
+
+Overview
+
+Models
+
+Federation Activity
+
+Contributions
+
+Rewards
+
+Privacy
+
+Audit
+
+==================================================
+12. MODEL MANAGEMENT
+==================================================
+
+Create model registry.
+
+Fields:
+
+Model ID
+Model Name
+Use Case
+Version
+Framework
+Accuracy
+Participants
+Training Rounds
+Created At
+Status
+
+Example model:
+
+Cancer Risk Prediction
+
+Version:
+
+v1.0
+v1.1
+v1.2
+
+Show:
+
+Before federation accuracy
+After federation accuracy
+
+Model version history.
+
+Model detail page:
+
+Overview
+Participants
+Training Metrics
+Federation History
+Privacy Protection
+Contribution Scores
+Blockchain Proofs
+Audit Trail
+
+==================================================
+13. FEDERATED TRAINING UI
+==================================================
+
+This is the most important demo screen.
+
+Create a visual network interface.
+
+Display:
+
+Central Global Model
+
+connected to:
+
+Hospital A
+Hospital B
+Hospital C
+
+During training show animated statuses:
+
+Model Distributed
+
+Local Training
+
+Update Generated
+
+Encrypting
+
+Uploading Update
+
+Secure Aggregation
+
+Global Model Updated
+
+Reward Calculation
+
+Blockchain Recording
+
+Training Complete
+
+Create a "Start Federated Round" button.
+
+When clicked:
+
+Frontend → Backend API → ML service
+
+Start actual training.
+
+Show progress in real time.
+
+Use:
+
+WebSocket or Server-Sent Events.
+
+Progress events:
+
+ROUND_STARTED
+MODEL_DISTRIBUTED
+PARTICIPANT_TRAINING
+LOCAL_UPDATE_GENERATED
+UPDATE_ENCRYPTED
+UPDATE_SUBMITTED
+SECURE_AGGREGATION
+GLOBAL_MODEL_UPDATED
+REWARD_CALCULATED
+BLOCKCHAIN_RECORDED
+ROUND_COMPLETED
+
+==================================================
+14. FEDERATED LEARNING BACKEND
+==================================================
+
+Create Python ML service.
+
+Suggested structure:
+
+ml-service/
+
+app/
+    main.py
+    config.py
+    models/
+    federation/
+    privacy/
+    datasets/
+    training/
+    metrics/
+    blockchain/
+
+Implement:
+
+GlobalModel
+ParticipantModel
+FederatedTrainer
+FederatedRound
+FedAvgAggregator
+
+Training flow:
+
+load global model
+
+for participant:
+
+load local synthetic dataset
+
+copy global model
+
+train locally
+
+calculate model update
+
+calculate training metrics
+
+encrypt update
+
+return encrypted update metadata
+
+aggregator combines updates
+
+generate next global model
+
+calculate global metrics
+
+save model version
+
+record round
+
+IMPORTANT:
+
+Never send participant raw data to the central FastAPI backend.
+
+Only metadata and model updates leave the participant environment.
+
+==================================================
+15. SYNTHETIC DATA GENERATION
+==================================================
+
+Create dataset generators.
+
+Healthcare:
+
+generate synthetic cancer data
+
+Agriculture:
+
+generate crop yield data
+
+Finance:
+
+generate fraud transaction data
+
+Each dataset must have:
+
+dataset_id
+owner_id
+sample_count
+feature_count
+target
+created_at
+privacy_classification
+
+Do not store raw participant datasets in the centralized production-style tables.
+
+Keep them in participant-specific storage.
+
+==================================================
+16. AGRICULTURE DEMO
+==================================================
+
+Create an agriculture federated model.
+
+Participants:
+
+Farm Group A
+Farm Group B
+Farm Group C
+
+Prediction:
+
+Crop Yield
+
+Features:
+
+- rainfall
+- soil moisture
+- soil pH
+- temperature
+- fertilizer usage
+- crop type
+- land area
+
+Output:
+
+Predicted yield.
+
+Show:
+
+farmer contribution
+
+model improvement
+
+reward tokens
+
+seed/fertilizer redemption concept
+
+==================================================
+17. FINANCE DEMO
+==================================================
+
+Create a finance federated fraud model.
+
+Participants:
+
+Bank A
+Bank B
+Bank C
+
+Dataset:
+
+Synthetic transactions.
+
+Features:
+
+- amount
+- merchant category
+- transaction frequency
+- account age
+- location risk
+- device risk
+- transaction time
+- previous fraud score
+
+Prediction:
+
+Fraud / Not Fraud.
+
+Show:
+
+precision
+recall
+F1
+ROC-AUC
+
+IMPORTANT:
+
+Use synthetic data only.
+
+==================================================
+18. MARKETPLACE
+==================================================
+
+Build an AI model marketplace.
+
+Organizations should be able to list:
+
+Federated Model
+Use Case
+Industry
+Performance
+Participating Organizations
+Privacy Method
+Training Rounds
+Model Price
+Access Policy
+
+Examples:
+
+Cancer Risk Predictor
+Fraud Detection Model
+Crop Yield Predictor
+
+Users can:
+
+View Model
+
+Request Access
+
+View Privacy Architecture
+
+View Performance
+
+View Contributors
+
+View Reward Information
+
+The marketplace must communicate that organizations collaborate on models rather than selling raw personal data.
+
+==================================================
+19. DATASET MANAGEMENT
+==================================================
+
+Create dataset registry.
+
+Show:
+
+Dataset Name
+
+Owner
+
+Industry
+
+Records
+
+Features
+
+Privacy Classification
+
+Training Status
+
+Usage Status
+
+Last Training Round
+
+Privacy Status
+
+Example statuses:
+
+LOCAL ONLY
+
+ENCRYPTED UPDATES ONLY
+
+PARTICIPATING
+
+ARCHIVED
+
+Raw data must never be downloadable from the central dashboard.
+
+==================================================
+20. PRIVACY CENTER
+==================================================
+
+Create a dedicated Privacy Center.
+
+Display:
+
+Raw data shared:
+0 bytes
+
+Encrypted updates:
+X
+
+Data owners:
+X
+
+Privacy events:
+X
+
+Encryption status:
+Enabled
+
+Secure aggregation:
+Enabled
+
+Blockchain audit:
+Enabled
+
+Create an architecture visualization.
+
+Example:
+
+DATA OWNER
+
+↓ local data
+
+LOCAL TRAINING
+
+↓ model update
+
+ENCRYPTION
+
+↓ encrypted update
+
+SECURE AGGREGATOR
+
+↓
+
+GLOBAL MODEL
+
+The UI should clearly communicate:
+
+"Your raw data remains inside your organization."
+
+==================================================
+21. AUDIT LOG
+==================================================
+
+Every major system event should be recorded.
+
+Audit event schema:
+
+id
+timestamp
+actor
+organization
+event_type
+resource
+status
+metadata
+hash
+blockchain_tx_hash
+
+Examples:
+
+MODEL_CREATED
+ROUND_STARTED
+LOCAL_TRAINING_COMPLETED
+UPDATE_ENCRYPTED
+UPDATE_SUBMITTED
+AGGREGATION_COMPLETED
+REWARD_CREATED
+TOKEN_CLAIMED
+ACCESS_REQUESTED
+ORGANIZATION_REGISTERED
+
+Create searchable/filterable audit UI.
+
+==================================================
+22. BLOCKCHAIN EXPLORER UI
+==================================================
+
+Create a DataVault internal blockchain dashboard.
+
+Display:
+
+Network
+Chain ID
+Latest Block
+Transactions
+Reward Transactions
+Contribution Proofs
+
+Transaction table:
+
+Hash
+From
+To
+Action
+Amount
+Round
+Timestamp
+Status
+
+Show contribution records.
+
+Example:
+
+Hospital A
+Round #12
+Contribution Score: 0.31
+Reward: 120 DATA
+TX: 0x...
+
+In local development show:
+
+"Local Test Blockchain"
+
+==================================================
+23. DATABASE
+==================================================
+
+Use PostgreSQL.
+
+Use a proper ORM.
+
+Recommended:
+
+SQLAlchemy for FastAPI
+
+or
+
+Prisma where appropriate.
+
+Main tables/entities:
+
+User
+
+Organization
+
+OrganizationMember
+
+Role
+
+Dataset
+
+Model
+
+ModelVersion
+
+FederatedRound
+
+Participant
+
+TrainingRun
+
+ModelUpdate
+
+PrivacyEvent
+
+Contribution
+
+Reward
+
+Wallet
+
+BlockchainTransaction
+
+AuditLog
+
+MarketplaceListing
+
+AccessRequest
+
+SystemSetting
+
+==================================================
+24. BACKEND API
+==================================================
+
+Build REST APIs.
+
+Suggested routes:
+
+/api/auth/*
+/api/users/*
+/api/organizations/*
+/api/datasets/*
+/api/models/*
+/api/federation/*
+/api/privacy/*
+/api/contributions/*
+/api/rewards/*
+/api/blockchain/*
+/api/marketplace/*
+/api/audit/*
+/api/dashboard/*
+
+Examples:
+
+POST /api/federation/rounds
+
+GET /api/federation/rounds
+
+GET /api/federation/rounds/:id
+
+POST /api/federation/rounds/:id/start
+
+GET /api/federation/rounds/:id/status
+
+GET /api/models
+
+POST /api/models
+
+GET /api/models/:id
+
+GET /api/rewards
+
+GET /api/blockchain/transactions
+
+GET /api/audit
+
+==================================================
+25. REAL-TIME EVENTS
+==================================================
+
+Use WebSockets or SSE.
+
+Frontend should subscribe to federation events.
+
+Example payload:
+
+{
+  "type": "PARTICIPANT_TRAINING",
+  "roundId": "round_001",
+  "participantId": "hospital_a",
+  "progress": 62,
+  "message": "Local training in progress"
+}
+
+Display these events in real time.
+
+==================================================
+26. AUTHENTICATION
+==================================================
+
+Implement secure authentication.
+
+For MVP:
+
+Email/password authentication
+
+JWT or secure session-based authentication.
+
+Roles:
+
+ADMIN
+ORG_ADMIN
+ML_OPERATOR
+PARTICIPANT
+VIEWER
+
+Protect routes using RBAC.
+
+Never expose secrets to the frontend.
+
+Use environment variables.
+
+==================================================
+27. FRONTEND TECHNOLOGY
+==================================================
+
+Use:
+
+Next.js
+
+React
+
+TypeScript
+
+Tailwind CSS
+
+shadcn/ui
+
+Framer Motion
+
+Recharts
+
+Lucide icons
+
+Use a professional responsive dashboard.
+
+Support:
+
+desktop
+
+tablet
+
+mobile
+
+Create reusable components.
+
+Suggested:
+
+components/
+  ui/
+  charts/
+  dashboard/
+  federation/
+  privacy/
+  blockchain/
+  marketplace/
+  organizations/
+  models/
+
+==================================================
+28. FRONTEND UX
+==================================================
+
+The UI should look like a high-end enterprise AI platform.
+
+Important details:
+
+- responsive sidebar
+- top navigation
+- organization selector
+- notification system
+- status badges
+- animated federation network
+- charts
+- tables
+- drawers
+- dialogs
+- toast notifications
+- empty states
+- loading states
+- error states
+- skeleton loaders
+
+Use realistic micro-interactions.
+
+Avoid unnecessary animations.
+
+==================================================
+29. ADMIN DASHBOARD
+==================================================
+
+Admin should be able to:
+
+Add organization
+
+Approve organization
+
+Manage participants
+
+Create model
+
+Start federation round
+
+Monitor model training
+
+View privacy events
+
+View contributions
+
+View rewards
+
+View blockchain
+
+Review marketplace listings
+
+View audit logs
+
+Manage system settings
+
+==================================================
+30. DEMO MODE
+==================================================
+
+Create a dedicated "Demo Mode".
+
+One click should configure:
+
+3 hospitals
+3 synthetic datasets
+1 cancer model
+3 participant wallets
+local blockchain
+default privacy configuration
+
+Create a button:
+
+"Initialize Demo Network"
+
+Then:
+
+"Run Federated Training"
+
+Then show the entire federation process.
+
+This must be the easiest path for a hackathon judge.
+
+==================================================
+31. DEMO DATA
+==================================================
+
+Seed database with:
+
+3 hospital organizations
+
+3 agriculture organizations
+
+3 bank organizations
+
+10 demo users
+
+multiple synthetic datasets
+
+multiple model versions
+
+historical federation rounds
+
+sample contribution records
+
+sample blockchain transactions
+
+sample rewards
+
+sample audit events
+
+But clearly label them as:
+
+"Demo Data"
+
+==================================================
+32. DEMO STORYLINE
+==================================================
+
+Implement a guided demo.
+
+Screen:
+
+"DataVault Federated AI Demo"
+
+Step 1:
+
+Three hospitals join a privacy-preserving network.
+
+Step 2:
+
+The global AI model is distributed.
+
+Step 3:
+
+Each hospital trains locally.
+
+Step 4:
+
+Raw patient data remains local.
+
+Step 5:
+
+Model updates are encrypted.
+
+Step 6:
+
+Secure aggregation creates the new model.
+
+Step 7:
+
+The model improves.
+
+Step 8:
+
+Contributions are scored.
+
+Step 9:
+
+Blockchain records contributions.
+
+Step 10:
+
+Rewards are distributed.
+
+Create visual progress.
+
+==================================================
+33. SECURITY
+==================================================
+
+Implement:
+
+- secure environment variables
+- CORS configuration
+- request validation
+- authentication
+- authorization
+- rate limiting where practical
+- input sanitization
+- server-side validation
+- secure cookies if using session auth
+- no secret keys in frontend
+- no private blockchain keys in frontend
+- database constraints
+- audit logging
+
+Use secure defaults.
+
+==================================================
+34. PRIVACY SECURITY DETAILS
+==================================================
+
+The privacy module should expose:
+
+EncryptionService
+
+SecureAggregationService
+
+PrivacyPolicyEngine
+
+ContributionPrivacyAnalyzer
+
+Create a privacy status object:
+
+{
+  "raw_data_shared": false,
+  "encrypted_updates": true,
+  "secure_aggregation": true,
+  "model_update_only": true,
+  "audit_logging": true
+}
+
+Display this information in the frontend.
+
+==================================================
+35. MODEL METRICS
+==================================================
+
+For classification show:
+
+Accuracy
+
+Precision
+
+Recall
+
+F1 Score
+
+ROC-AUC
+
+Confusion Matrix
+
+For regression show:
+
+MAE
+
+RMSE
+
+R²
+
+Create metric charts over federation rounds.
+
+==================================================
+36. CONTRIBUTION SCORING
+==================================================
+
+Design a transparent contribution scoring system.
+
+Possible formula:
+
+contribution_score =
+sample_weight
++
+training_quality
++
+model_improvement
++
+participation_consistency
+
+Normalize the score across participants.
+
+Store:
+
+raw_score
+
+normalized_score
+
+round_score
+
+lifetime_score
+
+Display the formula in a help dialog.
+
+==================================================
+37. REWARD ENGINE
+==================================================
+
+Implement reward service.
+
+Example:
+
+ROUND_REWARD_POOL = 1000 DATA
+
+If participants have:
+
+Hospital A = 0.45
+
+Hospital B = 0.30
+
+Hospital C = 0.25
+
+Rewards:
+
+Hospital A = 450 DATA
+Hospital B = 300 DATA
+Hospital C = 250 DATA
+
+The values must be calculated by backend logic.
+
+Do not hardcode per-user reward values.
+
+==================================================
+38. SMART CONTRACT
+==================================================
+
+Create Solidity contract.
+
+Example conceptual functions:
+
+registerParticipant(address participant)
+
+recordContribution(
+    address participant,
+    uint256 roundId,
+    bytes32 contributionHash,
+    uint256 contributionScore
+)
+
+allocateReward(
+    address participant,
+    uint256 roundId,
+    uint256 amount
+)
+
+claimReward()
+
+getParticipantContribution(address participant)
+
+getParticipantRewards(address participant)
+
+Emit events:
+
+ParticipantRegistered
+
+ContributionRecorded
+
+RewardAllocated
+
+RewardClaimed
+
+==================================================
+39. BLOCKCHAIN INTEGRATION
+==================================================
+
+Create blockchain service.
+
+The backend should communicate with the smart contract.
+
+Use:
+
+ethers.js
+
+or another stable Ethereum library.
+
+Create:
+
+BlockchainService
+
+WalletService
+
+RewardContractService
+
+TransactionTracker
+
+Store transaction metadata in PostgreSQL.
+
+Use environment variables:
+
+BLOCKCHAIN_RPC_URL
+
+BLOCKCHAIN_PRIVATE_KEY
+
+REWARD_CONTRACT_ADDRESS
+
+CHAIN_ID
+
+Never expose private keys in frontend code.
+
+==================================================
+40. DOCKER
+==================================================
+
+Create Docker-based development environment.
+
+docker-compose should include:
+
+frontend
+
+backend
+
+ml-service
+
+postgres
+
+redis
+
+blockchain/local node if useful
+
+Suggested ports:
+
+frontend: 3000
+
+backend: 8000
+
+ml-service: 8001
+
+postgres: 5432
+
+redis: 6379
+
+blockchain: appropriate local RPC port
+
+==================================================
+41. PROJECT STRUCTURE
+==================================================
+
+Use a monorepo.
+
+Example:
+
+datavault/
+
+apps/
+  web/
+
+services/
+  api/
+  ml-service/
+
+contracts/
+  DataVaultRewards.sol
+
+packages/
+  shared/
+  types/
+  config/
+
+data/
+  participants/
+    hospital-a/
+    hospital-b/
+    hospital-c/
+    farm-a/
+    bank-a/
+
+scripts/
+
+docs/
+
+docker-compose.yml
+
+README.md
+
+.env.example
+
+==================================================
+42. ENVIRONMENT VARIABLES
+==================================================
+
+Create .env.example files.
+
+Frontend:
+
+NEXT_PUBLIC_API_URL
+
+Backend:
+
+DATABASE_URL
+
+REDIS_URL
+
+JWT_SECRET
+
+ML_SERVICE_URL
+
+BLOCKCHAIN_RPC_URL
+
+REWARD_CONTRACT_ADDRESS
+
+BLOCKCHAIN_PRIVATE_KEY
+
+CHAIN_ID
+
+Do not put real secrets into source code.
+
+==================================================
+43. API DOCUMENTATION
+==================================================
+
+Automatically provide OpenAPI documentation through FastAPI.
+
+Document all major endpoints.
+
+Also create:
+
+docs/API.md
+
+docs/ARCHITECTURE.md
+
+docs/FEDERATED_LEARNING.md
+
+docs/PRIVACY.md
+
+docs/BLOCKCHAIN.md
+
+docs/DEMO.md
+
+==================================================
+44. ARCHITECTURE DOCUMENT
+==================================================
+
+Create an architecture diagram/document showing:
+
+Frontend
+
+↓
+
+API Gateway / Backend
+
+↓
+
+Federated Learning Orchestrator
+
+↓
+
+Participant Training Environments
+
+Hospital A
+Hospital B
+Hospital C
+
+↓
+
+Encrypted Model Updates
+
+↓
+
+Privacy Layer
+
+↓
+
+Secure Aggregator
+
+↓
+
+Global Model Registry
+
+↓
+
+Blockchain Reward Engine
+
+↓
+
+Blockchain Network
+
+Also show:
+
+PostgreSQL
+
+Redis
+
+Audit Logs
+
+==================================================
+45. FRONTEND PAGES
+==================================================
+
+Build all of these.
+
+Public:
+
+/
+/login
+/register
+/about
+/architecture
+
+Authenticated:
+
+/dashboard
+/organizations
+/organizations/[id]
+/models
+/models/[id]
+/federation
+/federation/[id]
+/privacy
+/rewards
+/blockchain
+/marketplace
+/marketplace/[id]
+/datasets
+/audit
+/settings
+
+Admin:
+
+/admin
+/admin/organizations
+/admin/users
+/admin/models
+/admin/federation
+/admin/audit
+/admin/blockchain
+/admin/settings
+
+==================================================
+46. SEARCH / FILTER
+==================================================
+
+Implement usable search and filters.
+
+Marketplace filters:
+
+Industry
+
+Performance
+
+Privacy Method
+
+Model Type
+
+Participation
+
+Price
+
+Organization
+
+Organization filters:
+
+Industry
+
+Status
+
+Verification
+
+Contribution
+
+Model filters:
+
+Use case
+
+Industry
+
+Status
+
+Version
+
+Accuracy
+
+==================================================
+47. NOTIFICATIONS
+==================================================
+
+Create notification center.
+
+Examples:
+
+"Federated Round #12 completed."
+
+"Hospital A earned 450 DATA."
+
+"Global model accuracy increased to 91.4%."
+
+"New marketplace model available."
+
+"Contribution recorded on blockchain."
+
+==================================================
+48. ERROR HANDLING
+==================================================
+
+Every layer should have:
+
+- structured error responses
+- logging
+- retry logic where appropriate
+- clear frontend error messages
+
+Example:
+
+Federation training failure
+
+→ mark round FAILED
+
+→ store error
+
+→ display notification
+
+→ preserve audit event
+
+==================================================
+49. TESTING
+==================================================
+
+Create tests.
+
+Backend:
+
+authentication
+
+RBAC
+
+organizations
+
+models
+
+federation
+
+rewards
+
+audit
+
+blockchain service
+
+ML:
+
+dataset generation
+
+local training
+
+FedAvg
+
+metrics
+
+privacy encryption
+
+reward calculation
+
+Frontend:
+
+key components
+
+basic page rendering
+
+critical user flows
+
+Smart contract:
+
+participant registration
+
+contribution recording
+
+reward allocation
+
+reward claiming
+
+==================================================
+50. PERFORMANCE
+==================================================
+
+The hackathon demo must run on a normal developer laptop.
+
+Do not create unnecessarily huge models.
+
+Use lightweight models.
+
+Recommended:
+
+MLP
+
+small neural network
+
+or logistic regression baseline
+
+The demonstration should complete in a practical amount of time.
+
+Support configurable:
+
+epochs
+
+batch size
+
+learning rate
+
+number of federation rounds
+
+participants
+
+sample size
+
+==================================================
+51. MODEL REGISTRY
+==================================================
+
+Save model versions.
+
+Metadata:
+
+model_id
+
+version
+
+framework
+
+architecture
+
+metrics
+
+training_round
+
+created_at
+
+participants
+
+model_hash
+
+privacy_mode
+
+status
+
+Use model hashes to prove model-version integrity.
+
+==================================================
+52. DATA INTEGRITY
+==================================================
+
+Create hashes for:
+
+model update
+
+model version
+
+contribution event
+
+audit event
+
+dataset metadata
+
+Example:
+
+SHA-256
+
+Store hashes in the audit trail.
+
+Blockchain may store the proof/hash rather than sensitive content.
+
+Never put personal or raw dataset information on-chain.
+
+==================================================
+53. PRIVACY-FIRST MARKETPLACE PRINCIPLE
+==================================================
+
+Make this distinction extremely clear in the UI.
+
+DataVault is NOT:
+
+"Sell your customer data."
+
+DataVault IS:
+
+"Collaborate on AI without transferring raw data."
+
+Marketplace listings should represent:
+
+models
+
+federated training opportunities
+
+AI collaboration opportunities
+
+privacy-preserving computation services
+
+NOT raw personal datasets.
+
+==================================================
+54. INDIA-FOCUSED POSITIONING
+==================================================
+
+Position the product for India's data ecosystem.
+
+Target sectors:
+
+Healthcare
+
+Banking / Finance
+
+Agriculture
+
+Insurance
+
+Research
+
+Government / Public Sector
+
+Enterprise
+
+Mention:
+
+"Designed for privacy-conscious collaborative AI in India's data-rich but siloed ecosystem."
+
+Do not make unsupported claims such as:
+
+"India's first"
+
+"No competitors"
+
+"Guaranteed DPDP compliance"
+
+unless explicitly marked as a business hypothesis.
+
+==================================================
+55. DPDP / LEGAL DISCLAIMER
+==================================================
+
+Include a small disclaimer in the application:
+
+"DataVault is a research and hackathon demonstration. It is not legal or regulatory compliance advice. Production deployments must undergo organization-specific privacy, security, legal, and regulatory review."
+
+==================================================
+56. ADMIN DEMO CONTROLS
+==================================================
+
+Create a Demo Controls panel.
+
+Buttons:
+
+Initialize Demo Network
+
+Generate Synthetic Data
+
+Create Global Model
+
+Start Federation
+
+Run Next Round
+
+Simulate Reward Distribution
+
+Record Blockchain Proof
+
+Reset Demo
+
+Export Demo Report
+
+These controls must perform real backend actions.
+
+==================================================
+57. EXPORTABLE REPORT
+==================================================
+
+Allow admin to export a demo report.
+
+Report contents:
+
+Project
+
+Model
+
+Participants
+
+Federation rounds
+
+Accuracy improvement
+
+Privacy configuration
+
+Encrypted updates
+
+Contribution scores
+
+Rewards
+
+Blockchain transactions
+
+Audit summary
+
+Use PDF generation or a clean downloadable HTML/CSV report where appropriate.
+
+==================================================
+58. DEMO VISUALIZATION
+==================================================
+
+Create a central visualization.
+
+Concept:
+
+                    GLOBAL MODEL
+                         |
+          -------------------------------
+          |              |              |
+      HOSPITAL A     HOSPITAL B     HOSPITAL C
+          |              |              |
+      LOCAL DATA      LOCAL DATA      LOCAL DATA
+          |              |              |
+       LOCAL ML       LOCAL ML       LOCAL ML
+          |              |              |
+      ENCRYPTED      ENCRYPTED      ENCRYPTED
+       UPDATE          UPDATE          UPDATE
+          \              |              /
+           \             |             /
+              SECURE AGGREGATOR
+                     |
+                GLOBAL MODEL
+                     |
+             CONTRIBUTION SCORE
+                     |
+               DATA REWARDS
+                     |
+                 BLOCKCHAIN
+
+Represent this elegantly in the UI.
+
+==================================================
+59. UX DETAILS FOR HACKATHON JUDGES
+==================================================
+
+A judge should understand the product within 20 seconds.
+
+Dashboard hero should communicate:
+
+"Raw Data Never Leaves the Organization."
+
+Show a visible privacy indicator:
+
+🛡 Privacy Protected
+
+Then show live federation status.
+
+Make the demo visually compelling.
+
+Important storytelling sequence:
+
+Problem
+
+→ Data Silos
+
+→ Local Training
+
+→ Encrypted Updates
+
+→ Secure Aggregation
+
+→ Better AI
+
+→ Contribution Proof
+
+→ Token Rewards
+
+==================================================
+60. README
+==================================================
+
+Create a comprehensive README.
+
+Include:
+
+Project overview
+
+Architecture
+
+Features
+
+Tech stack
+
+Setup
+
+Environment variables
+
+Docker setup
+
+Database setup
+
+Blockchain setup
+
+ML setup
+
+Demo instructions
+
+API docs
+
+Testing
+
+Security notes
+
+Privacy architecture
+
+Limitations
+
+Future roadmap
+
+==================================================
+61. ONE-COMMAND DEMO
+==================================================
+
+The ideal final setup should be:
+
+git clone ...
+
+cp .env.example .env
+
+docker compose up --build
+
+Then open:
+
+http://localhost:3000
+
+Provide seed/demo initialization.
+
+Also provide:
+
+npm run demo
+
+or equivalent command
+
+that initializes the complete demo environment.
+
+==================================================
+62. DEVELOPMENT QUALITY
+==================================================
+
+Use:
+
+clean architecture
+
+strong typing
+
+modular components
+
+service/repository pattern where appropriate
+
+database migrations
+
+proper validation
+
+logging
+
+environment configuration
+
+reusable UI components
+
+API versioning where practical
+
+No giant monolithic files.
+
+No duplicate logic.
+
+No unnecessary dependencies.
+
+==================================================
+63. FINAL ACCEPTANCE CRITERIA
+==================================================
+
+Before considering the project complete, verify the following flow works:
+
+1. User logs in.
+
+2. Dashboard loads data from backend.
+
+3. Demo network can be initialized.
+
+4. Synthetic hospital datasets are generated.
+
+5. Global model exists.
+
+6. Federation round can be started.
+
+7. Hospital A trains locally.
+
+8. Hospital B trains locally.
+
+9. Hospital C trains locally.
+
+10. Raw datasets stay local.
+
+11. Model updates are produced.
+
+12. Updates can be encrypted.
+
+13. Secure aggregation occurs.
+
+14. New global model is generated.
+
+15. Metrics are calculated.
+
+16. Contribution scores are calculated.
+
+17. Rewards are calculated.
+
+18. Blockchain contribution proof is recorded.
+
+19. Reward transaction is tracked.
+
+20. Dashboard updates.
+
+21. Audit log records all important actions.
+
+22. User can inspect privacy status.
+
+23. User can inspect blockchain transactions.
+
+24. User can inspect model history.
+
+25. User can inspect rewards.
+
+26. Marketplace works.
+
+27. Agriculture demo works.
+
+28. Finance demo works.
+
+29. Reset Demo works.
+
+30. Docker setup works.
+
+==================================================
+64. IMPORTANT FALLBACK RULE
+==================================================
+
+If any preferred dependency becomes difficult to run in the target environment:
+
+DO NOT stop the project.
+
+Replace it with a stable open-source equivalent while preserving the architectural concept.
+
+For example:
+
+- TFF → custom FedAvg engine
+- Hyperledger → local EVM blockchain for hackathon
+- full HE on huge tensors → TenSEAL on selected model-update vectors
+- complex production IAM → secure JWT/session RBAC MVP
+
+Document all such decisions.
+
+==================================================
+65. DO NOT FAKE THE CORE TECHNOLOGY
+==================================================
+
+The following MUST be genuine working implementations:
+
+Federated averaging
+
+Local training
+
+Model updates
+
+Model metrics
+
+Encryption module
+
+Contribution scoring
+
+Reward calculation
+
+Database persistence
+
+API communication
+
+Blockchain transaction/integration
+
+Audit logging
+
+The UI may animate the process, but the underlying state must come from actual backend events.
+
+==================================================
+66. BUILD ORDER
+==================================================
+
+Build in this order:
+
+Phase 1:
+Repository structure and configuration
+
+Phase 2:
+Database and backend
+
+Phase 3:
+Synthetic datasets
+
+Phase 4:
+Federated learning engine
+
+Phase 5:
+Privacy/encryption layer
+
+Phase 6:
+Blockchain/smart contract
+
+Phase 7:
+Reward engine
+
+Phase 8:
+Frontend
+
+Phase 9:
+Real-time federation visualization
+
+Phase 10:
+Marketplace
+
+Phase 11:
+Admin dashboard
+
+Phase 12:
+Testing
+
+Phase 13:
+Docker
+
+Phase 14:
+README/documentation
+
+Phase 15:
+End-to-end verification
+
+==================================================
+67. FINAL OUTPUT REQUIRED FROM YOU
+==================================================
+
+After implementation, provide:
+
+1. Full project code
+
+2. Complete folder structure
+
+3. Database schema
+
+4. Smart contract
+
+5. API documentation
+
+6. ML/federated-learning implementation
+
+7. Privacy implementation
+
+8. Demo seed scripts
+
+9. Docker configuration
+
+10. Environment variable templates
+
+11. Test suite
+
+12. README
+
+13. Exact commands to run
+
+14. Demo credentials
+
+15. Exact hackathon demo flow
+
+16. List of limitations
+
+17. List of future production upgrades
+
+==================================================
+68. FINAL INSTRUCTION
+==================================================
+
+Do not stop after scaffolding.
+
+Do not return only explanations.
+
+Do not generate a design-only prototype.
+
+Implement the entire DataVault application and connect every major component.
+
+Prioritize:
+
+1. End-to-end functionality
+2. Privacy-preserving ML demonstration
+3. Excellent UI/UX
+4. Blockchain contribution tracking
+5. Transparent token rewards
+6. Clear architecture
+7. Easy local setup
+8. Hackathon demo reliability
+
+The final result should feel like a real early-stage AI infrastructure startup product named:
+
+DATAVAULT
+
+with the core message:
+
+"Train Together. Share Nothing."

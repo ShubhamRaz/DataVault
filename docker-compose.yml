@@ -1,0 +1,171 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# DataVault — Privacy-First AI Marketplace · full Docker stack
+#
+#   web        : Next.js 16 app — port 3000
+#   web-seed   : one-shot demo initializer (same root Dockerfile, `seed` target)
+#   api        : FastAPI backend (services/api)      — port 8000
+#   ml-service : PyTorch federated-learning service  — port 8001
+#   hardhat    : DataVaultRewards local test network — RPC :8545, chainId 31337
+#   postgres   : PostgreSQL 16 metadata store         — port 5432
+#   redis      : Redis 7 queue/pub-sub                — port 6379
+#
+# ▶ One-command demo:   cp .env.example .env && docker compose up --build
+#   Then open http://localhost:3000 — login admin@datavault.demo / demo1234
+#
+# ⚠ MODE NOTE (read this):
+#   By default the `web` service runs in EMBEDDED DEMO ENGINE mode — the exact
+#   "sandbox mode" shipped in the repo: the TypeScript federated-learning
+#   engine, pairwise zero-sum secure aggregation, local hash-chain ledger and
+#   the SQLite demo database all run inside the web app (seeded automatically
+#   by `web-seed`). The Python services (api, ml-service), Postgres, Redis and
+#   the Hardhat node form the production-shaped stack.
+#   Setting NEXT_PUBLIC_API_URL (e.g. http://localhost:8000) switches the web
+#   app to the FastAPI backend. Next.js inlines NEXT_PUBLIC_* variables at
+#   BUILD time, so after changing it run:  docker compose up --build --force-recreate web
+#
+#   REWARD_CONTRACT_ADDRESS: when empty, the api service deploys
+#   DataVaultRewards to the hardhat network at startup (recommended for the
+#   demo). To pin an address instead:
+#     docker compose up -d hardhat
+#     docker compose exec hardhat npx hardhat run scripts/deploy.js --network localhost
+#     # copy the printed address → .env: REWARD_CONTRACT_ADDRESS=0x…
+#     docker compose up -d api
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: datavault
+
+services:
+  # ── database (api service metadata: orgs, models, rounds, rewards, proofs) ──
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: datavault
+      POSTGRES_PASSWORD: datavault
+      POSTGRES_DB: datavault
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U datavault -d datavault"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── cache / queues (api ↔ ml-service job bus) ──
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ── blockchain: DataVaultRewards local test network (chainId 31337) ──
+  # Built from contracts/Dockerfile — compiles the Solidity contract and serves
+  # `npx hardhat node` on 0.0.0.0:8545. 20 deterministic pre-funded accounts.
+  # Deploy the contract with:
+  #   docker compose exec hardhat npx hardhat run scripts/deploy.js --network localhost
+  # Demo-seed hospitals on it:
+  #   docker compose exec hardhat npx hardhat run scripts/seed-demo.js --network localhost
+  hardhat:
+    build: ./contracts
+    restart: unless-stopped
+    ports:
+      - "8545:8545"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:8545',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'eth_chainId',params:[],id:1})}).then(r=>process.exit(r.status===200?0:1)).catch(()=>process.exit(1))"
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  # ── federated-learning service (PyTorch + TenSEAL, built by the services agent) ──
+  # Build context owned by services/ml-service (Dockerfile expected there).
+  ml-service:
+    build: ./services/ml-service
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      ML_MODE: ${ML_MODE:-demo}                 # demo | encryption (TenSEAL CKKS)
+      REDIS_URL: redis://redis:6379
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+
+  # ── FastAPI backend (built by the services agent; build context services/api) ──
+  api:
+    build: ./services/api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ml-service:
+        condition: service_started
+      hardhat:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://datavault:datavault@postgres:5432/datavault
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-datavault-dev-secret-change-me-please-32b}
+      ML_SERVICE_URL: http://ml-service:8001
+      BLOCKCHAIN_RPC_URL: http://hardhat:8545
+      CHAIN_ID: ${CHAIN_ID:-31337}
+      # empty → api deploys DataVaultRewards at startup (see note at the top)
+      REWARD_CONTRACT_ADDRESS: ${REWARD_CONTRACT_ADDRESS:-}
+      BLOCKCHAIN_PRIVATE_KEY: ${BLOCKCHAIN_PRIVATE_KEY:-}
+
+  # ── one-shot demo initializer for the web app's embedded engine ──
+  # Same root Dockerfile, `seed` target: prisma db push + scripts/seed.ts
+  # (real federated training runs — takes ~1-2 minutes on first boot).
+  web-seed:
+    build:
+      context: .
+      target: seed
+    restart: "no"
+    environment:
+      DATABASE_URL: file:/app/db/custom.db
+    volumes:
+      - web-data:/app/db
+      - participant-data:/app/data
+
+  # ── Next.js 16 web app (embedded demo engine by default — see note at top) ──
+  web:
+    build:
+      context: .
+      target: runner
+      args:
+        # "" = embedded demo engine (sandbox mode) · http://localhost:8000 = FastAPI backend
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      web-seed:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: file:/app/db/custom.db
+      JWT_SECRET: ${JWT_SECRET:-datavault-dev-secret-change-me-please-32b}
+      PRIVACY_MODE: ${PRIVACY_MODE:-DEMO}       # DEMO | ENCRYPTION (AES-256-GCM layer)
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
+    volumes:
+      - web-data:/app/db
+      - participant-data:/app/data
+
+volumes:
+  postgres-data:
+  redis-data:
+  web-data:
+  participant-data:

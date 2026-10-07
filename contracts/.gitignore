@@ -1,0 +1,9 @@
+# DataVault contracts — ignore build output & secrets
+node_modules/
+cache/
+artifacts/
+coverage/
+coverage.json
+typechain-types/
+.env
+*.log
