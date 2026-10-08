@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataVault — Privacy-First AI Marketplace</title>
+<meta name="description" content="DataVault enables organizations to collaborate on AI without sharing raw data.">
+
+<style>
+:root{
+  --navy:#07152f;
+  --navy2:#0b2142;
+  --ink:#102044;
+  --muted:#64748b;
+  --line:#dce8f2;
+  --soft:#f5faff;
+  --white:#fff;
+  --cyan:#13bddd;
+  --teal:#16c6a3;
+  --green:#20b985;
+  --blue:#2e7cf6;
+  --orange:#f3a51b;
+  --shadow:0 18px 55px rgba(15,47,79,.10);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink);
+  background:#fff;
+}
+a{text-decoration:none;color:inherit}
+button{font:inherit;cursor:pointer}
+.container{width:min(1180px,calc(100% - 40px));margin:auto}
+
+/* NAV */
+.navbar{
+  position:sticky;top:0;z-index:100;
+  height:74px;
+  background:rgba(255,255,255,.91);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(220,232,242,.9);
+}
+.nav-inner{height:100%;display:flex;align-items:center;gap:34px}
+.logo{display:flex;align-items:center;gap:10px;min-width:220px}
+.logo-mark{
+  width:38px;height:38px;border-radius:11px;
+  display:grid;place-items:center;color:#fff;font-weight:900;
+  background:linear-gradient(145deg,#12d2bb,#159bdc);
+  box-shadow:0 9px 22px rgba(19,189,221,.24)
+}
+.logo strong{font-size:19px;display:block;line-height:1}
+.logo small{display:block;color:#72839a;font-size:9px;letter-spacing:.08em;margin-top:5px}
+.nav-links{display:flex;align-items:center;gap:27px;font-size:12px;color:#51627b}
+.nav-links a:hover{color:#078e8d}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.mode{
+  width:67px;height:34px;padding:3px;border:1px solid var(--line);
+  border-radius:20px;background:#f4f8fc;display:flex
+}
+.mode button{width:29px;border:0;border-radius:50%;background:transparent;color:#607188}
+.mode button.active{background:var(--navy);color:#fff}
+.signin{border:1px solid #cbdbe8;border-radius:9px;padding:9px 15px;color:var(--ink);font-weight:700;font-size:12px}
+.demo{border:0;border-radius:9px;padding:10px 17px;color:#fff;font-weight:800;font-size:12px;background:linear-gradient(135deg,#08b7d5,#10c9b0);box-shadow:0 8px 22px rgba(14,190,193,.20)}
+.mobile-menu{display:none;border:0;background:none;font-size:22px}
+
+/* HERO */
+.hero{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(circle at 80% 30%,rgba(21,190,218,.20),transparent 30%),
+    radial-gradient(circle at 55% 100%,rgba(26,198,163,.10),transparent 30%),
+    linear-gradient(105deg,#fff 0%,#f5fbff 47%,#eaf8fb 100%);
+  border-bottom:1px solid #e2edf4;
+}
+.hero-grid{
+  min-height:560px;
+  display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid #bfe8ee;background:#effcfd;color:#078b8e;
+  border-radius:30px;padding:8px 13px;font-size:11px;font-weight:800;
+}
+.badge i{width:7px;height:7px;background:#14c8a5;border-radius:50%}
+.hero h1{
+  margin:19px 0 13px;
+  font-size:clamp(43px,5.4vw,72px);
+  line-height:.98;letter-spacing:-.055em;
+}
+.hero h1 span{
+  background:linear-gradient(90deg,#0bbbd4,#12c7a5);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{max-width:620px;color:#61718a;font-size:15px;line-height:1.75;margin:0}
+.hero-buttons{display:flex;gap:11px;margin-top:25px;flex-wrap:wrap}
+.btn-primary,.btn-outline{
+  height:45px;padding:0 18px;border-radius:10px;font-size:12px;font-weight:800
+}
+.btn-primary{border:0;color:#fff;background:var(--navy);box-shadow:0 10px 25px rgba(7,21,47,.18)}
+.btn-outline{border:1px solid #bdd2e2;background:#fff;color:#12345b}
+.hero-note{font-size:10px;color:#7890a8;margin-top:18px}
+
+/* NETWORK VISUAL */
+.network{
+  min-height:410px;position:relative;display:grid;place-items:center
+}
+.glow{
+  position:absolute;width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,rgba(18,196,210,.23),transparent 67%);
+  filter:blur(5px)
+}
+.globe{
+  position:relative;width:225px;height:225px;border-radius:50%;
+  background:
+   radial-gradient(circle at 34% 29%,#8ff7ee 0 2%,transparent 3%),
+   radial-gradient(circle at 70% 60%,#2bcbd5 0 1.5%,transparent 2%),
+   radial-gradient(circle,#0a3155,#07152f 68%,#061021);
+  border:1px solid rgba(40,222,220,.65);
+  box-shadow:0 0 55px rgba(15,206,211,.28),inset 0 0 40px rgba(22,204,190,.16)
+}
+.globe:before,.globe:after{
+  content:"";position:absolute;inset:17px;border:1px solid rgba(74,226,223,.32);border-radius:50%
+}
+.globe:after{transform:rotate(60deg) scaleX(.48)}
+.shield{position:absolute;inset:0;display:grid;place-items:center;font-size:56px;color:#48e6d3;text-shadow:0 0 25px rgba(72,230,211,.5)}
+.global{
+  position:absolute;top:10px;left:50%;transform:translateX(-50%);
+  background:#092442;color:#fff;border:1px solid #1bbfca;border-radius:12px;
+  padding:10px 19px;text-align:center;box-shadow:0 10px 30px rgba(4,29,55,.25)
+}
+.global small{display:block;color:#8eb2c7;font-size:9px}
+.global b{font-size:19px;color:#43e2cf}
+.org{
+  position:absolute;width:150px;padding:10px 12px;border-radius:11px;
+  background:rgba(7,27,50,.92);border:1px solid rgba(28,202,211,.55);
+  color:#fff;font-size:10px;box-shadow:0 10px 25px rgba(0,30,50,.18)
+}
+.org b{display:block;font-size:11px}
+.org span{color:#75cfd0;font-size:8px}
+.org.aiims{left:3%;top:21%}.org.apollo{right:3%;top:20%}
+.org.deccan{left:4%;bottom:19%}.org.hdfc{right:4%;bottom:18%}
+.connector{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#1bcfd2,transparent);width:145px}
+.c1{left:24%;top:37%;transform:rotate(-19deg)}
+.c2{right:24%;top:37%;transform:rotate(19deg)}
+.c3{left:24%;bottom:37%;transform:rotate(19deg)}
+.c4{right:24%;bottom:37%;transform:rotate(-19deg)}
+.chain-proof{
+  position:absolute;bottom:17px;left:50%;transform:translateX(-50%);
+  white-space:nowrap;padding:9px 15px;border:1px solid #20c5c1;
+  border-radius:25px;background:rgba(6,28,49,.93);color:#b9e8e6;font-size:9px
+}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:18px 0}
+.stat{
+  background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;
+  display:flex;align-items:center;gap:13px;box-shadow:0 8px 25px rgba(30,65,90,.05)
+}
+.stat-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:#e8f3ff;color:#2679e8}
+.stat:nth-child(2) .stat-icon{background:#e4fbf5;color:#0b9d80}
+.stat:nth-child(3) .stat-icon{background:#eef0ff;color:#6c54db}
+.stat:nth-child(4) .stat-icon{background:#fff2d9;color:#d88900}
+.stat b{font-size:21px;display:block}.stat span{font-size:10px;color:var(--muted);display:block;margin-top:3px}
+
+/* SECTIONS */
+section.block{padding:86px 0}
+.eyebrow{color:#0a9b91;font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}
+.section-title{font-size:clamp(29px,3.3vw,44px);letter-spacing:-.04em;margin:8px 0 13px;line-height:1.05}
+.section-title span{color:#0ab79f}
+.section-desc{color:#687991;font-size:13px;line-height:1.7;max-width:650px}
+
+/* PROBLEM */
+.problem{background:#fff}
+.problem-grid{display:grid;grid-template-columns:.85fr 1.45fr;gap:45px;align-items:start}
+.problem-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.info-card{border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff;transition:.2s}
+.info-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.info-icon{width:35px;height:35px;border-radius:10px;background:#eef7ff;color:#2078e7;display:grid;place-items:center;margin-bottom:11px}
+.info-card b{font-size:12px;display:block}.info-card p{font-size:10px;color:#718097;line-height:1.55;margin:6px 0 0}
+
+/* HOW */
+.dark-section{
+  color:#fff;
+  background:
+   radial-gradient(circle at 70% 20%,rgba(11,184,205,.15),transparent 35%),
+   linear-gradient(135deg,#07152f,#091f3d);
+}
+.dark-section .section-desc{color:#a6bdd0}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:32px}
+.step{
+  position:relative;padding:20px 15px;border:1px solid #1c4961;border-radius:13px;
+  background:rgba(9,37,65,.72)
+}
+.step:not(:last-child):after{content:"→";position:absolute;right:-12px;top:50%;color:#1cd5c8;font-size:18px;z-index:2}
+.step-num{font-size:10px;color:#1fd0c3;font-weight:900}.step-icon{font-size:24px;margin:15px 0 10px}
+.step b{font-size:12px;display:block}.step p{font-size:9px;line-height:1.55;color:#91abc0}
+
+/* ARCHITECTURE */
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:32px}
+.arch-card{border:1px solid var(--line);border-radius:16px;padding:22px;background:#fff;box-shadow:0 8px 25px rgba(24,62,88,.04)}
+.arch-card h3{font-size:14px;margin:10px 0 7px}.arch-card p{font-size:10px;line-height:1.55;color:#708097}
+.arch-list{list-style:none;padding:0;margin:14px 0 0}.arch-list li{font-size:10px;color:#566b83;padding:7px 0;border-top:1px solid #edf2f6}
+.arch-list li:before{content:"✓";color:#0aa789;font-weight:900;margin-right:7px}
+.arch-tag{display:inline-block;padding:6px 8px;border-radius:8px;background:#edf9f7;color:#078a77;font-size:9px;font-weight:800}
+
+/* USE CASES */
+.usecases{background:#f6fbfe}
+.use-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:30px}
+.use-card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(24,62,88,.05)}
+.use-img{height:135px;display:grid;place-items:center;background:linear-gradient(135deg,#d9eef8,#e6fbf4);font-size:55px}
+.use-body{padding:18px}.use-label{font-size:9px;color:#0a9c90;font-weight:850;text-transform:uppercase}.use-body h3{font-size:14px;margin:7px 0}.use-body p{font-size:10px;line-height:1.6;color:#718097}.metric{font-size:16px;color:#079a7d;font-weight:850}.metric small{font-size:9px;color:#8796aa;font-weight:500}
+
+/* SECURITY */
+.security-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.check-list{margin:23px 0 0;padding:0;list-style:none}.check-list li{padding:9px 0;font-size:11px;color:#556880;border-bottom:1px solid #edf2f6}.check-list b{color:#12345b}
+.live-panel{border-radius:18px;padding:21px;background:#07182e;color:#fff;box-shadow:0 20px 55px rgba(6,25,49,.2)}
+.live-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.live-head b{font-size:14px}.live-pill{font-size:9px;background:#083d37;color:#41dfbf;border-radius:20px;padding:6px 9px}
+.live-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.live-stat{border:1px solid #1c3a50;background:#0a2039;border-radius:10px;padding:12px}.live-stat span{display:block;color:#8ca7bb;font-size:9px}.live-stat b{display:block;color:#40d9c1;font-size:13px;margin-top:5px}
+
+/* MARKETPLACE */
+.market{background:#07152f;color:#fff}
+.market .section-desc{color:#9cb5c9}
+.market-grid{display:grid;grid-template-columns:1fr 1fr .8fr;gap:13px;margin-top:30px}
+.market-card{padding:20px;border-radius:15px;background:#0b2340;border:1px solid #1a4860}.market-card.bad{border-color:#71333b}.market-card.good{border-color:#17665c}
+.market-card h3{font-size:12px}.market-card .quote{font-size:18px;font-weight:800;margin:12px 0}.bad .quote{color:#ff8090}.good .quote{color:#35dfc3}
+.market-card p{font-size:9px;line-height:1.6;color:#9db5c7}
+.rewards{padding:20px;border:1px solid #1a4860;border-radius:15px;background:#0b2340}.reward-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #17394e;font-size:9px}.reward-row b{color:#40dbc3}
+
+/* CTA */
+.cta{
+  position:relative;overflow:hidden;text-align:center;color:#fff;
+  padding:90px 20px;
+  background:
+   radial-gradient(circle at 70% 50%,rgba(13,200,210,.22),transparent 28%),
+   linear-gradient(135deg,#07152f,#0a2947);
+}
+.cta h2{font-size:clamp(34px,4vw,52px);margin:0 0 12px;letter-spacing:-.04em}.cta p{color:#9db7ca;font-size:13px;max-width:600px;margin:0 auto 24px;line-height:1.65}
+
+/* FOOTER */
+footer{border-top:1px solid var(--line);padding:25px 0;background:#fff}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;color:#73839a;font-size:9px}
+.footer-links{display:flex;gap:20px}
+
+/* DARK MODE */
+body.dark{background:#07101d;color:#eaf5ff;--line:#1b3348;--muted:#91a5bb}
+body.dark .navbar,body.dark footer{background:#07101d;border-color:#183047}
+body.dark .nav-links,body.dark .hero p,body.dark .section-desc{color:#91a5bb}
+body.dark .signin{color:#eaf5ff;border-color:#284258;background:#0c1d30}
+body.dark .hero{background:radial-gradient(circle at 80% 30%,rgba(21,190,218,.18),transparent 30%),linear-gradient(105deg,#07101d,#0b2035)}
+body.dark .stat,.dark-mode-card,.body.dark .info-card,.body.dark .arch-card,.body.dark .use-card{background:#0d1b2b;border-color:#1b3348}
+body.dark .problem,body.dark .usecases{background:#081321}
+body.dark .info-card p,body.dark .arch-card p,body.dark .use-body p{color:#8ea4ba}
+body.dark .info-card,.body.dark .arch-card{box-shadow:none}
+body.dark .check-list li{color:#92a7bb;border-color:#1a3043}
+body.dark .check-list b{color:#e5f2ff}
+body.dark footer{color:#7890a5}
+
+/* RESPONSIVE */
+@media(max-width:1000px){
+ .nav-links{display:none}.mobile-menu{display:block;margin-left:auto}
+ .nav-right{margin-left:0}.logo{min-width:0}
+ .hero-grid{grid-template-columns:1fr;min-height:auto;padding:75px 0 40px}
+ .network{min-height:390px}
+ .stats{grid-template-columns:repeat(2,1fr)}
+ .steps{grid-template-columns:repeat(2,1fr)}
+ .step:not(:last-child):after{display:none}
+ .arch-grid,.use-grid{grid-template-columns:1fr}
+ .problem-grid,.security-grid{grid-template-columns:1fr}
+ .market-grid{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+ .container{width:min(100% - 24px,1180px)}
+ .nav-right .mode,.signin{display:none}
+ .hero h1{font-size:43px}
+ .hero p{font-size:13px}
+ .network{transform:scale(.9);margin:-15px}
+ .stats{grid-template-columns:1fr}
+ section.block{padding:62px 0}
+ .problem-cards{grid-template-columns:1fr}
+ .steps{grid-template-columns:1fr}
+ .live-grid{grid-template-columns:1fr}
+ .footer-inner{flex-direction:column;gap:12px}
+}
+</style>
+</head>
+
+<body>
+<header class="navbar">
+  <div class="container nav-inner">
+    <a class="logo" href="#">
+      <div class="logo-mark">◇</div>
+      <div><strong>DataVault</strong><small>PRIVACY-FIRST AI MARKETPLACE</small></div>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#usecases">Use cases</a>
+      <a href="#marketplace">Marketplace</a>
+    </nav>
+
+    <div class="nav-right">
+      <div class="mode">
+        <button id="light" class="active" onclick="theme('light')">☼</button>
+        <button id="dark" onclick="theme('dark')">●</button>
+      </div>
+      <a class="signin" href="/login">Sign in</a>
+      <button class="demo" onclick="launchDemo()">Launch Demo →</button>
+    </div>
+    <button class="mobile-menu">☰</button>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="badge"><i></i> Raw data never leaves the data owner</div>
+      <h1>Train AI together.<br><span>Keep your data.</span></h1>
+      <p>
+        DataVault enables organizations to collaboratively build AI models without sharing raw data.
+        Federated learning, secure aggregation and blockchain-verified rewards — designed for
+        privacy-conscious collaborative AI in India's data-rich but siloed ecosystem.
+      </p>
+      <div class="hero-buttons">
+        <button class="btn-primary" onclick="launchDemo()">▷ &nbsp; Launch Demo</button>
+        <a class="btn-outline" href="#architecture">Explore Architecture</a>
+        <a class="btn-outline" href="#how">⌘ &nbsp; View Live Network</a>
+      </div>
+      <div class="hero-note">Research / Hackathon Demonstration · 100% synthetic demo data</div>
+    </div>
+
+    <div class="network">
+      <div class="glow"></div>
+      <div class="global"><small>GLOBAL MODEL</small><b>83.2%</b></div>
+      <div class="globe"><div class="shield">♢</div></div>
+
+      <div class="connector c1"></div><div class="connector c2"></div>
+      <div class="connector c3"></div><div class="connector c4"></div>
+
+      <div class="org aiims"><b>AIIMS</b><span>Local data · encrypted Δ</span></div>
+      <div class="org apollo"><b>Apollo</b><span>Local data · encrypted Δ</span></div>
+      <div class="org deccan"><b>Deccan</b><span>Local data · encrypted Δ</span></div>
+      <div class="org hdfc"><b>HDFC</b><span>Local data · encrypted Δ</span></div>
+
+      <div class="chain-proof">◈ On-chain proofs · 19 blocks · 16,000 DATA rewarded</div>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="stats">
+    <div class="stat"><div class="stat-icon">♟</div><div><b>10</b><span>Organizations</span></div></div>
+    <div class="stat"><div class="stat-icon">▱</div><div><b>16</b><span>Federation Rounds</span></div></div>
+    <div class="stat"><div class="stat-icon">◇</div><div><b>48</b><span>Protected Updates</span></div></div>
+    <div class="stat"><div class="stat-icon">◉</div><div><b>16,000 DATA</b><span>Rewards Distributed</span></div></div>
+  </div>
+</section>
+
+<section class="block problem" id="problem">
+  <div class="container problem-grid">
+    <div>
+      <div class="eyebrow">The Problem</div>
+      <h2 class="section-title">Why <span>data silos</span> matter</h2>
+      <p class="section-desc">
+        Organizations sit on valuable data but cannot share it — privacy regulations,
+        security concerns, competitive sensitivity and data ownership make centralizing
+        raw data impossible. The result: every organization trains weaker models alone.
+      </p>
+      <a class="btn-outline" style="display:inline-flex;align-items:center;margin-top:22px" href="#how">Learn more →</a>
+    </div>
+
+    <div class="problem-cards">
+      <div class="info-card"><div class="info-icon">▣</div><b>Privacy regulations</b><p>DPDP, HIPAA-style and sectoral rules restrict raw data movement.</p></div>
+      <div class="info-card"><div class="info-icon">♢</div><b>Security & compliance</b><p>Centralizing sensitive records creates honeypots and breach risks.</p></div>
+      <div class="info-card"><div class="info-icon">▥</div><b>Competitive sensitivity</b><p>Customer records and transactions are strategic assets.</p></div>
+      <div class="info-card"><div class="info-icon">♙</div><b>Data ownership</b><p>Legal ownership and consent remain with the data controller.</p></div>
+      <div class="info-card"><div class="info-icon">▤</div><b>Siloed learning</b><p>Single-organization models can inherit local bias.</p></div>
+      <div class="info-card"><div class="info-icon">⚠</div><b>No fair incentives</b><p>Verifiable contribution tracking creates a trust and reward layer.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block dark-section" id="how">
+  <div class="container">
+    <div class="eyebrow">How DataVault Works</div>
+    <h2 class="section-title">Three privacy layers, one network</h2>
+    <p class="section-desc">
+      A global model travels to each organization. Only privacy-protected model updates travel back.
+      Contributions are proven on-chain and rewarded in DATA tokens.
+    </p>
+
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><div class="step-icon">▤</div><b>Local Data</b><p>Raw data stays inside the organization.</p></div>
+      <div class="step"><div class="step-num">02</div><div class="step-icon">⚙</div><b>Local Training</b><p>Models train locally on participant data.</p></div>
+      <div class="step"><div class="step-num">03</div><div class="step-icon">♢</div><b>Encrypted Updates</b><p>Masked and encrypted model updates travel back.</p></div>
+      <div class="step"><div class="step-num">04</div><div class="step-icon">⌘</div><b>Secure Aggregation</b><p>Individual updates are hidden from the aggregator.</p></div>
+      <div class="step"><div class="step-num">05</div><div class="step-icon">▥</div><b>Better AI</b><p>The global model improves across the network.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="architecture">
+  <div class="container">
+    <div class="eyebrow">Architecture</div>
+    <h2 class="section-title">Privacy-preserving by construction</h2>
+    <p class="section-desc">End-to-end system design combining federated learning, privacy protection and blockchain incentives.</p>
+
+    <div class="arch-grid">
+      <div class="arch-card">
+        <span class="arch-tag">DATA OWNER SIDE</span>
+        <h3>Organization</h3><p>Local raw data never leaves the participant environment.</p>
+        <ul class="arch-list">
+          <li>Local Training (SGD)</li><li>Model Update Δ</li><li>Masking + AES-256-GCM</li><li>Raw data: 0 bytes transferred</li>
+        </ul>
+      </div>
+      <div class="arch-card">
+        <span class="arch-tag">PLATFORM SIDE</span>
+        <h3>Secure Aggregator</h3><p>Privacy-protected updates are combined to create the next global model.</p>
+        <ul class="arch-list">
+          <li>Secure aggregation</li><li>FedAvg → Global Model</li><li>Model registry + hashes</li><li>Contribution scoring</li>
+        </ul>
+      </div>
+      <div class="arch-card">
+        <span class="arch-tag">TRUST LAYER</span>
+        <h3>Blockchain Ledger</h3><p>Contribution proofs and rewards create an auditable incentive layer.</p>
+        <ul class="arch-list">
+          <li>SHA-256 contribution proofs</li><li>1000 DATA reward pool</li><li>Smart contract (EVM)</li><li>Wallets + claim transactions</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block usecases" id="usecases">
+  <div class="container">
+    <div class="eyebrow">Use Cases</div>
+    <h2 class="section-title">Built for India's <span>data ecosystem</span></h2>
+    <p class="section-desc">Healthcare, banking, agriculture, insurance, research and the public sector — data-rich, siloed, privacy-first.</p>
+
+    <div class="use-grid">
+      <article class="use-card">
+        <div class="use-img">🏥</div>
+        <div class="use-body"><div class="use-label">Healthcare</div><h3>Federated Cancer Prediction</h3><p>Hospitals co-train risk models across synthetic biomarker datasets without moving raw patient records.</p><div class="metric">89.0% <small>accuracy · +5.3 vs silo</small></div></div>
+      </article>
+      <article class="use-card">
+        <div class="use-img">🏦</div>
+        <div class="use-body"><div class="use-label">Finance</div><h3>Cross-Bank Fraud Detection</h3><p>Banks detect fraud patterns across institutions without exposing transaction streams.</p><div class="metric">91.5% <small>accuracy · +0.7 vs silo</small></div></div>
+      </article>
+      <article class="use-card">
+        <div class="use-img">🌾</div>
+        <div class="use-body"><div class="use-label">Agriculture</div><h3>Crop Yield Prediction</h3><p>Farmer collectives predict yields from soil and weather telemetry with privacy-preserving collaboration.</p><div class="metric">R² 0.69 <small>vs R² 0.65 siloed</small></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container security-grid">
+    <div>
+      <div class="eyebrow">Security & Privacy</div>
+      <h2 class="section-title">Your raw data remains <span>inside your organization</span></h2>
+      <p class="section-desc">DataVault is architected so that exposing raw records is not an option. Privacy controls protect the collaboration layer.</p>
+      <ul class="check-list">
+        <li><b>Raw Data:</b> NOT SHARED — stays in participant environments</li>
+        <li><b>Model Updates:</b> SHARED — privacy-protected only</li>
+        <li><b>Secure Aggregation:</b> ENABLED — individual updates hidden</li>
+        <li><b>Blockchain Audit:</b> ENABLED — contribution proofs</li>
+        <li><b>Access:</b> RBAC + JWT sessions + rate limiting</li>
+      </ul>
+    </div>
+
+    <div class="live-panel">
+      <div class="live-head"><b>Live privacy posture</b><span class="live-pill">● LIVE</span></div>
+      <div class="live-grid">
+        <div class="live-stat"><span>Raw data shared</span><b>0 bytes</b></div>
+        <div class="live-stat"><span>Encryption</span><b>AES-256-GCM</b></div>
+        <div class="live-stat"><span>Encrypted updates</span><b>48</b></div>
+        <div class="live-stat"><span>Secure aggregation</span><b>Enabled</b></div>
+        <div class="live-stat"><span>Data owners</span><b>9+</b></div>
+        <div class="live-stat"><span>Blockchain audit</span><b>19 blocks</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block market" id="marketplace">
+  <div class="container">
+    <div class="eyebrow">Marketplace & Rewards</div>
+    <h2 class="section-title">Collaborate on AI — <span>never sell data</span></h2>
+    <p class="section-desc">Federated models, training collaborations and privacy-preserving computation services — with performance and contribution visibility.</p>
+
+    <div class="market-grid">
+      <div class="market-card bad">
+        <h3>What DataVault IS NOT</h3>
+        <div class="quote">“Sell your customer data.”</div>
+        <p>No raw datasets are listed, transferable or downloadable. Raw-access attempts are blocked and logged.</p>
+      </div>
+      <div class="market-card good">
+        <h3>What DataVault IS</h3>
+        <div class="quote">“Collaborate on AI without transferring raw data.”</div>
+        <p>Federated models, privacy-preserving computation and transparent contribution tracking.</p>
+      </div>
+      <div class="rewards">
+        <h3 style="font-size:12px;margin-top:0">Top reward claimers</h3>
+        <div class="reward-row"><span>AIIMS Demo Center</span><b>2,136</b></div>
+        <div class="reward-row"><span>Apollo Demo Hospital</span><b>2,431</b></div>
+        <div class="reward-row"><span>Deccan Agri Collective</span><b>1,564</b></div>
+        <div class="reward-row"><span>Green Valley Farm</span><b>1,599</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container">
+    <div class="eyebrow">DataVault</div>
+    <h2>Train Together. Share Nothing.</h2>
+    <p>Spin up the demo network, run a federated round and watch privacy-protected updates get aggregated, proven and rewarded — all on synthetic data.</p>
+    <div class="hero-buttons" style="justify-content:center">
+      <button class="demo" onclick="launchDemo()">▷ &nbsp; Launch the demo</button>
+      <a class="btn-outline" href="#architecture">Read the architecture</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <div><b style="color:#12264b">DataVault</b> · Privacy-First AI Marketplace</div>
+    <div class="footer-links"><a href="#how">How it works</a><a href="#architecture">Architecture</a><a href="#usecases">Use cases</a><span>© 2026</span></div>
+  </div>
+</footer>
+
+<script>
+function launchDemo(){
+  window.location.href="/dashboard";
+}
+function theme(mode){
+  document.body.classList.toggle("dark",mode==="dark");
+  document.getElementById("light").classList.toggle("active",mode==="light");
+  document.getElementById("dark").classList.toggle("active",mode==="dark");
+  localStorage.setItem("dv-theme",mode);
+}
+const saved=localStorage.getItem("dv-theme");
+if(saved==="dark") theme("dark");
+</script>
+</body>
+</html>
