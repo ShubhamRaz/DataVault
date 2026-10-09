@@ -81,22 +81,22 @@ export function RewardsView() {
       />
 
       {/* wallet summary */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-amber-500/25 bg-amber-500/[0.06] p-4">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Total Earned (network)</p>
-          <p className="mt-1 font-mono text-2xl font-semibold text-amber-300">{totals.totalEarned?.toLocaleString("en-IN")} <span className="text-sm">DATA</span></p>
+      <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
+        <div className="rounded-2xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-[#241c09] p-4 transition-all hover:border-amber-400/50">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">Total Earned (network)</p>
+          <p className="mt-1 font-mono text-2xl font-black text-amber-800 dark:text-amber-300">{totals.totalEarned?.toLocaleString("en-IN")} <span className="text-sm font-semibold">DATA</span></p>
         </div>
-        <div className="rounded-xl border border-cyan-500/25 bg-cyan-500/[0.06] p-4">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Available Balance</p>
-          <p className="mt-1 font-mono text-2xl font-semibold text-cyan-300">{totals.available?.toLocaleString("en-IN")} <span className="text-sm">DATA</span></p>
+        <div className="rounded-2xl border border-teal-200 dark:border-cyan-500/30 bg-teal-50 dark:bg-[#0b253b] p-4 transition-all hover:border-teal-400/50">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-teal-700 dark:text-cyan-300">Available Balance</p>
+          <p className="mt-1 font-mono text-2xl font-black text-teal-800 dark:text-cyan-300">{totals.available?.toLocaleString("en-IN")} <span className="text-sm font-semibold">DATA</span></p>
         </div>
-        <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/[0.06] p-4">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Claimed Rewards</p>
-          <p className="mt-1 font-mono text-2xl font-semibold text-emerald-400">{totals.claimed?.toLocaleString("en-IN")} <span className="text-sm">DATA</span></p>
+        <div className="rounded-2xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-[#082420] p-4 transition-all hover:border-emerald-400/50">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Claimed Rewards</p>
+          <p className="mt-1 font-mono text-2xl font-black text-emerald-800 dark:text-[#2ee0bd]">{totals.claimed?.toLocaleString("en-IN")} <span className="text-sm font-semibold">DATA</span></p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Round Pool</p>
-          <p className="mt-1 font-mono text-2xl font-semibold text-foreground">{totals.poolPerRound} <span className="text-sm">DATA</span></p>
+        <div className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#0d1828] p-4 transition-all hover:border-slate-500/50">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Round Pool</p>
+          <p className="mt-1 font-mono text-2xl font-black text-slate-900 dark:text-white">{totals.poolPerRound} <span className="text-sm font-semibold">DATA</span></p>
         </div>
       </div>
 

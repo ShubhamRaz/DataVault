@@ -34,8 +34,8 @@ export function AboutView() {
         </div>
 
         {/* Full stack flow */}
-        <section className="rounded-2xl border border-border bg-card p-6 sm:p-8">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">End-to-end flow of a federated round</h2>
+        <section className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828] p-6 sm:p-8 shadow-sm">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">End-to-end flow of a federated round</h2>
           <div className="mt-6 grid gap-3">
             {[
               { icon: <Building2 size={14} />, tone: "muted", label: "FRONTEND (Next.js 16) — role-based dashboards, live federation view, marketplace" },
@@ -50,24 +50,24 @@ export function AboutView() {
               { icon: <Globe size={14} />, tone: "amber", label: "BLOCKCHAIN NETWORK — local hash-chain ledger / DataVaultRewards.sol on EVM" },
             ].map((row, i) => (
               <div key={i} className="flex flex-col items-center">
-                <div className={`flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-[12px] font-medium ${
-                  row.tone === "cyan" ? "border-cyan-500/30 bg-cyan-500/[0.07] text-cyan-200"
-                  : row.tone === "teal" ? "border-teal-500/30 bg-teal-500/[0.07] text-teal-200"
-                  : row.tone === "violet" ? "border-violet-500/30 bg-violet-500/[0.07] text-violet-200"
-                  : row.tone === "amber" ? "border-amber-500/30 bg-amber-500/[0.07] text-amber-200"
-                  : "border-border bg-muted/40 text-muted-foreground"
+                <div className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-[12px] font-medium ${
+                  row.tone === "cyan" ? "border-cyan-200 dark:border-cyan-500/30 bg-cyan-50 dark:bg-[#0b253b] text-cyan-800 dark:text-cyan-200"
+                  : row.tone === "teal" ? "border-teal-200 dark:border-teal-500/30 bg-teal-50 dark:bg-[#082420] text-teal-800 dark:text-[#2ee0bd]"
+                  : row.tone === "violet" ? "border-violet-200 dark:border-violet-500/30 bg-violet-50 dark:bg-[#1a1438] text-violet-800 dark:text-violet-200"
+                  : row.tone === "amber" ? "border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-[#241c09] text-amber-800 dark:text-amber-200"
+                  : "border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#07101e] text-slate-700 dark:text-slate-300"
                 }`}>
                   {row.icon}
                   {row.label}
                 </div>
-                {i < 9 && <ArrowDown size={13} className="my-1 text-cyan-500/40" />}
+                {i < 9 && <ArrowDown size={13} className="my-1 text-cyan-400/50" />}
               </div>
             ))}
           </div>
-          <div className="mt-6 grid gap-2 text-center text-[11px] text-muted-foreground sm:grid-cols-3">
-            <div className="rounded-lg border border-border bg-background/40 py-2">PostgreSQL / SQLite — 20+ entities</div>
-            <div className="rounded-lg border border-border bg-background/40 py-2">Redis — production caching layer</div>
-            <div className="rounded-lg border border-border bg-background/40 py-2">Audit hash-chain — tamper-evident trail</div>
+          <div className="mt-6 grid gap-2 text-center text-[11px] text-slate-500 dark:text-slate-400 sm:grid-cols-3">
+            <div className="rounded-xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#07101e] py-2.5 font-mono">PostgreSQL / SQLite — 20+ entities</div>
+            <div className="rounded-xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#07101e] py-2.5 font-mono">Redis — production caching layer</div>
+            <div className="rounded-xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#07101e] py-2.5 font-mono">Audit hash-chain — tamper-evident trail</div>
           </div>
         </section>
 
@@ -87,13 +87,13 @@ export function AboutView() {
               points: ["SHA-256 hash-chained PoW ledger (Local Test Network)", "Contribution proofs + reward allocations on-chain", "Transparent scoring: 0.35/0.25/0.25/0.15 formula", "1000 DATA pool per round, claim transactions", "DataVaultRewards.sol for EVM deployment"],
             },
           ].map((layer) => (
-            <div key={layer.title} className="rounded-2xl border border-border bg-card p-6">
-              <div className="rounded-lg border border-cyan-500/25 bg-cyan-500/10 p-2 text-cyan-300 w-fit">{layer.icon}</div>
-              <p className="mt-4 text-[15px] font-semibold">{layer.title}</p>
+            <div key={layer.title} className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828] p-6 shadow-sm">
+              <div className="rounded-xl border border-teal-200 dark:border-cyan-500/30 bg-teal-50 dark:bg-[#0b253b] p-2.5 text-teal-700 dark:text-cyan-300 w-fit">{layer.icon}</div>
+              <p className="mt-4 text-[15px] font-bold text-slate-900 dark:text-white">{layer.title}</p>
               <ul className="mt-3 space-y-2">
                 {layer.points.map((p) => (
-                  <li key={p} className="flex items-start gap-2 text-[12px] leading-relaxed text-muted-foreground">
-                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-teal-400" />
+                  <li key={p} className="flex items-start gap-2 text-[12px] leading-relaxed text-slate-600 dark:text-slate-400">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500 dark:bg-[#2ee0bd]" />
                     {p}
                   </li>
                 ))}
@@ -104,8 +104,8 @@ export function AboutView() {
 
         {/* Sectors */}
         <section>
-          <h2 className="text-center text-lg font-semibold">Designed for India&apos;s data ecosystem</h2>
-          <p className="mx-auto mt-2 max-w-xl text-center text-[13px] text-muted-foreground">
+          <h2 className="text-center text-lg font-bold text-slate-900 dark:text-white">Designed for India&apos;s data ecosystem</h2>
+          <p className="mx-auto mt-2 max-w-xl text-center text-[13px] text-slate-600 dark:text-slate-400">
             Privacy-conscious collaborative AI for a data-rich but siloed ecosystem — healthcare, banking & finance,
             agriculture, insurance, research, government and enterprise.
           </p>
@@ -116,9 +116,9 @@ export function AboutView() {
               { icon: <Wheat size={16} />, label: "Agriculture" },
               { icon: <ScrollText size={16} />, label: "Research" },
             ].map((s) => (
-              <div key={s.label} className="flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-4">
-                <span className="text-teal-300">{s.icon}</span>
-                <span className="text-[12px] font-medium">{s.label}</span>
+              <div key={s.label} className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828] p-4 text-center">
+                <span className="text-teal-600 dark:text-[#2ee0bd]">{s.icon}</span>
+                <span className="text-[12px] font-semibold text-slate-800 dark:text-white">{s.label}</span>
               </div>
             ))}
           </div>
@@ -126,17 +126,17 @@ export function AboutView() {
 
         {/* Honest labels */}
         <section className="space-y-3">
-          <div className="rounded-xl border border-amber-500/25 bg-amber-500/[0.05] p-4 text-[11.5px] leading-relaxed text-amber-200/90">
-            <p className="font-semibold">Research / Hackathon Demonstration.</p>
-            <p className="mt-1">
+          <div className="rounded-2xl border border-amber-300 dark:border-amber-500/25 bg-amber-50 dark:bg-[#241c09]/80 p-4 text-[11.5px] leading-relaxed text-amber-900 dark:text-amber-200/90 shadow-sm">
+            <p className="font-bold text-amber-800 dark:text-amber-300">Research / Hackathon Demonstration.</p>
+            <p className="mt-1 text-slate-700 dark:text-slate-300">
               DataVault is a research and hackathon demonstration. It is not legal or regulatory compliance advice.
               Production deployments must undergo organization-specific privacy, security, legal, and regulatory review.
               All datasets in this demo are synthetic; no real patient, financial or farm records are used.
               Privacy-preserving architecture designed to minimize raw-data exposure — no certification claims (HIPAA, DPDP or otherwise) are made.
             </p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-4 text-[11.5px] leading-relaxed text-muted-foreground">
-            <p className="font-semibold text-foreground">Demo-grade engineering choices (documented per spec §64):</p>
+          <div className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#0d1828] p-4 text-[11.5px] leading-relaxed text-slate-600 dark:text-slate-400 shadow-sm">
+            <p className="font-semibold text-slate-900 dark:text-white">Demo-grade engineering choices (documented per spec §64):</p>
             <ul className="mt-2 space-y-1.5">
               <li>• The sandbox preview runs the embedded TypeScript FL engine (real SGD + FedAvg); the Python PyTorch service ships for Docker/production mode with the same semantics.</li>
               <li>• TenSEAL CKKS homomorphic encryption is implemented in the Python service as the ENCRYPTION-mode path; the TS engine uses real AES-256-GCM + zero-sum masking.</li>

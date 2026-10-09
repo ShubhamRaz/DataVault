@@ -92,15 +92,19 @@ export function PageHeader({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-      <div className="flex items-start gap-3">
-        {icon && <div className="mt-0.5 rounded-lg border border-cyan-500/20 bg-cyan-500/10 p-2 text-cyan-300">{icon}</div>}
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-1">
+      <div className="flex items-start gap-3.5">
+        {icon && (
+          <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-teal-500/25 bg-teal-50 dark:bg-gradient-to-br dark:from-[#0b273b] dark:to-[#081a29] text-teal-700 dark:text-[#2ee0bd] shadow-sm">
+            {icon}
+          </div>
+        )}
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{title}</h1>
-          {subtitle && <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{subtitle}</p>}
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-2xl">{title}</h1>
+          {subtitle && <p className="mt-1 max-w-2xl text-[12px] leading-relaxed text-slate-600 dark:text-slate-400">{subtitle}</p>}
         </div>
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap items-center gap-2.5">{actions}</div>}
     </div>
   );
 }

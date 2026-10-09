@@ -11,7 +11,9 @@ interface AppState {
   notifications: NotificationRow[];
   unread: number;
   authChecked: boolean;
+  theme: "dark" | "light";
 
+  setTheme: (t: "dark" | "light") => void;
   loadSession: () => Promise<void>;
   login: (email: string, password: string) => Promise<SessionUser>;
   register: (payload: { email: string; name: string; password: string; role?: string; organizationSlug?: string }) => Promise<SessionUser>;
@@ -27,6 +29,21 @@ export const useAppStore = create<AppState>((set, get) => ({
   notifications: [],
   unread: 0,
   authChecked: false,
+  theme: (typeof window !== "undefined" && (localStorage.getItem("datavault-theme") as "dark" | "light")) || "light",
+
+  setTheme: (theme: "dark" | "light") => {
+    set({ theme });
+    if (typeof document !== "undefined") {
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+        document.body.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.body.classList.remove("dark");
+      }
+      localStorage.setItem("datavault-theme", theme);
+    }
+  },
 
   loadSession: async () => {
     set({ sessionLoading: true });

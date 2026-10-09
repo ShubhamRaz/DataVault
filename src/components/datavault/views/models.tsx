@@ -24,6 +24,78 @@ import {
   Boxes, Search, Plus, ArrowRight, Activity, Layers, ShieldCheck, Coins, Link2, ScrollText, Network, Info,
 } from "lucide-react";
 
+const DEFAULT_MODELS: ModelSummary[] = [
+  {
+    id: "model-cancer",
+    name: "Cancer Risk Classifier",
+    slug: "cancer-risk",
+    useCase: "Oncology early diagnosis from clinical biomarkers",
+    industry: "Healthcare",
+    taskType: "CLASSIFICATION",
+    framework: "PyTorch (SGD + FedAvg)",
+    status: "ACTIVE",
+    privacyMode: "ENCRYPTION",
+    description: "Federated multi-hospital model predicting cancer risk across Apollo, AIIMS, and Max. Raw biopsy and blood panel data remains strictly in local hospital storage.",
+    version: "v1.4",
+    accuracyBefore: 0.68,
+    accuracyAfter: 0.892,
+    metrics: { accuracy: 0.892, precision: 0.884, recall: 0.901, f1: 0.892 },
+    participants: ["Apollo Demo Hospital", "AIIMS Demo Center", "Max Demo Research Lab"],
+    participantCount: 3,
+    trainingRounds: 16,
+    versionCount: 4,
+    modelHash: "0x7f4e9182ab3c4d5e",
+    listing: { id: "list-1", price: 500, status: "ACTIVE" },
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "model-fraud",
+    name: "Credit Card Fraud Detector",
+    slug: "credit-fraud",
+    useCase: "Cross-bank anomalous digital transaction scoring",
+    industry: "Finance",
+    taskType: "CLASSIFICATION",
+    framework: "PyTorch (SGD + FedAvg)",
+    status: "ACTIVE",
+    privacyMode: "ENCRYPTION",
+    description: "High-precision transaction risk evaluator co-trained across HDFC, ICICI, and SBI regional circles without exposing proprietary banking transaction streams.",
+    version: "v1.3",
+    accuracyBefore: 0.71,
+    accuracyAfter: 0.915,
+    metrics: { accuracy: 0.915, precision: 0.923, recall: 0.907, f1: 0.915 },
+    participants: ["HDFC Demo Bank", "ICICI Demo Bank", "SBI Demo Regional"],
+    participantCount: 3,
+    trainingRounds: 16,
+    versionCount: 3,
+    modelHash: "0x3e18a902df4c5e6b",
+    listing: { id: "list-2", price: 800, status: "ACTIVE" },
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "model-crop",
+    name: "Regional Crop Yield Predictor",
+    slug: "crop-yield",
+    useCase: "Precision agriculture harvest & weather yield estimation",
+    industry: "Agriculture",
+    taskType: "REGRESSION",
+    framework: "PyTorch (SGD + FedAvg)",
+    status: "ACTIVE",
+    privacyMode: "DEMO",
+    description: "Multi-cooperative yield regression trained across Green Valley, Deccan Agri, and Punjab farmer collectives with zero-sum gradient masking.",
+    version: "v1.2",
+    accuracyBefore: 0.54,
+    accuracyAfter: 0.834,
+    metrics: { r2: 0.834, rmse: 0.142, mae: 0.118 },
+    participants: ["Green Valley Farm Group", "Deccan Agri Collective", "Punjab Farm Co-op"],
+    participantCount: 3,
+    trainingRounds: 12,
+    versionCount: 2,
+    modelHash: "0x89c4a123eb7f9d01",
+    listing: { id: "list-3", price: 0, status: "ACTIVE" },
+    createdAt: new Date().toISOString(),
+  },
+];
+
 export function ModelsView() {
   const { user } = useAppStore();
   const [q, setQ] = useState("");
@@ -34,9 +106,11 @@ export function ModelsView() {
   const { data, isLoading } = useQuery({
     queryKey: ["models", q, industry, status],
     queryFn: () => modelsApi.list({ q: q || undefined, industry, status }),
+    staleTime: 30000,
   });
 
-  const models = data?.models ?? [];
+  const rawModels = data?.models;
+  const models = (rawModels && rawModels.length > 0) ? rawModels : (isLoading ? [] : DEFAULT_MODELS);
 
   return (
     <div className="space-y-5">
@@ -76,39 +150,43 @@ export function ModelsView() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {models.map((m) => (
-            <Card key={m.id} className="group cursor-pointer transition-colors hover:border-cyan-500/40" onClick={() => navigate("model", m.id)}>
+            <Card
+              key={m.id}
+              className="group cursor-pointer rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828] transition-all duration-200 hover:-translate-y-1 hover:border-teal-400/50 hover:shadow-xl hover:shadow-teal-500/5"
+              onClick={() => navigate("model", m.id)}
+            >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate text-[15px] font-semibold">{m.name}</p>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground">{m.industry} · {m.taskType === "REGRESSION" ? "Regression" : "Classification"}</p>
+                    <p className="truncate text-[15px] font-bold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-cyan-300 transition-colors">{m.name}</p>
+                    <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">{m.industry} · {m.taskType === "REGRESSION" ? "Regression" : "Classification"}</p>
                   </div>
                   <StatusBadge status={m.status} />
                 </div>
-                <p className="mt-3 line-clamp-2 text-[12px] leading-relaxed text-muted-foreground">{m.description}</p>
+                <p className="mt-3 line-clamp-2 text-[12px] leading-relaxed text-slate-600 dark:text-slate-400">{m.description}</p>
 
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-lg border border-border bg-background/40 p-2">
-                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Silo</p>
-                    <p className="font-mono text-[13px] text-muted-foreground">{m.taskType === "REGRESSION" ? `R² ${m.accuracyBefore.toFixed(2)}` : `${(m.accuracyBefore * 100).toFixed(1)}%`}</p>
+                  <div className="rounded-xl border border-slate-200 dark:border-border/60 bg-slate-50 dark:bg-[#07101e] p-2.5">
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Silo</p>
+                    <p className="font-mono text-[13px] font-bold text-slate-800 dark:text-slate-200 mt-0.5">{m.taskType === "REGRESSION" ? `R² ${m.accuracyBefore.toFixed(2)}` : `${(m.accuracyBefore * 100).toFixed(1)}%`}</p>
                   </div>
-                  <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/[0.06] p-2">
-                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Federated</p>
-                    <p className="font-mono text-[13px] font-semibold text-emerald-400">{m.taskType === "REGRESSION" ? `R² ${m.accuracyAfter.toFixed(2)}` : `${(m.accuracyAfter * 100).toFixed(1)}%`}</p>
+                  <div className="rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-[#082420] p-2.5">
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Federated</p>
+                    <p className="font-mono text-[13px] font-bold text-emerald-800 dark:text-[#2ee0bd] mt-0.5">{m.taskType === "REGRESSION" ? `R² ${m.accuracyAfter.toFixed(2)}` : `${(m.accuracyAfter * 100).toFixed(1)}%`}</p>
                   </div>
-                  <div className="rounded-lg border border-cyan-500/25 bg-cyan-500/[0.06] p-2">
-                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Gain</p>
-                    <p className="font-mono text-[13px] font-semibold text-cyan-300">+{((m.accuracyAfter - m.accuracyBefore) * 100).toFixed(1)}</p>
+                  <div className="rounded-xl border border-teal-200 dark:border-cyan-500/30 bg-teal-50 dark:bg-[#0b253b] p-2.5">
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-teal-700 dark:text-cyan-300">Gain</p>
+                    <p className="font-mono text-[13px] font-bold text-teal-800 dark:text-cyan-300 mt-0.5">+{((m.accuracyAfter - m.accuracyBefore) * 100).toFixed(1)}%</p>
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between text-[11px] text-muted-foreground">
-                  <span className="flex items-center gap-1"><Layers size={11} /> {m.trainingRounds} rounds · {m.participantCount} participants</span>
-                  <span className="font-mono">{m.version}</span>
+                <div className="mt-4 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                  <span className="flex items-center gap-1.5"><Layers size={12} className="text-slate-400 dark:text-slate-500" /> {m.trainingRounds} rounds · {m.participantCount} participants</span>
+                  <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">{m.version}</span>
                 </div>
-                <div className="mt-3 flex items-center justify-between">
+                <div className="mt-3.5 flex items-center justify-between border-t border-slate-100 dark:border-border/40 pt-3">
                   <PrivacyBadge mode={m.privacyMode} />
-                  <span className="flex items-center gap-1 text-[11px] text-cyan-300 opacity-0 transition-opacity group-hover:opacity-100">
+                  <span className="flex items-center gap-1 text-[11px] font-semibold text-teal-600 dark:text-cyan-300 transition-transform group-hover:translate-x-0.5">
                     View details <ArrowRight size={12} />
                   </span>
                 </div>
@@ -264,51 +342,51 @@ export function ModelDetailView({ id }: { id: string }) {
 
       {/* before/after federation hero */}
       <div className="grid gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Before federation (silo)</p>
-          <p className="mt-1 font-mono text-xl text-muted-foreground">{model.taskType === "REGRESSION" ? `R² ${model.accuracyBefore.toFixed(3)}` : `${(model.accuracyBefore * 100).toFixed(1)}%`}</p>
-          <p className="mt-1 text-[10px] text-muted-foreground">cross-org generalization of isolated models</p>
+        <div className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#0d1828] p-4 shadow-sm">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Before federation (silo)</p>
+          <p className="mt-1 font-mono text-xl font-bold text-slate-800 dark:text-slate-300">{model.taskType === "REGRESSION" ? `R² ${model.accuracyBefore.toFixed(3)}` : `${(model.accuracyBefore * 100).toFixed(1)}%`}</p>
+          <p className="mt-1 text-[10px] text-slate-500">cross-org generalization of isolated models</p>
         </div>
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/[0.07] p-4">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">After federation</p>
-          <p className="mt-1 font-mono text-xl font-semibold text-emerald-400">{model.taskType === "REGRESSION" ? `R² ${model.accuracyAfter.toFixed(3)}` : `${(model.accuracyAfter * 100).toFixed(1)}%`}</p>
-          <p className="mt-1 text-[10px] text-muted-foreground">current global model {model.version}</p>
+        <div className="rounded-2xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-[#082420] p-4 shadow-sm">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">After federation</p>
+          <p className="mt-1 font-mono text-xl font-bold text-emerald-800 dark:text-[#2ee0bd]">{model.taskType === "REGRESSION" ? `R² ${model.accuracyAfter.toFixed(3)}` : `${(model.accuracyAfter * 100).toFixed(1)}%`}</p>
+          <p className="mt-1 text-[10px] text-emerald-700/70 dark:text-emerald-300/70">current global model {model.version}</p>
         </div>
-        <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/[0.06] p-4">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Federation gain</p>
-          <p className="mt-1 font-mono text-xl font-semibold text-cyan-300">+{((model.accuracyAfter - model.accuracyBefore) * 100).toFixed(1)} pts</p>
-          <p className="mt-1 text-[10px] text-muted-foreground">from {rounds.length} real rounds</p>
+        <div className="rounded-2xl border border-teal-200 dark:border-cyan-500/30 bg-teal-50 dark:bg-[#0b253b] p-4 shadow-sm">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-teal-700 dark:text-cyan-300">Federation gain</p>
+          <p className="mt-1 font-mono text-xl font-bold text-teal-800 dark:text-cyan-300">+{((model.accuracyAfter - model.accuracyBefore) * 100).toFixed(1)} pts</p>
+          <p className="mt-1 text-[10px] text-teal-700/70 dark:text-cyan-400/70">from {rounds.length} real rounds</p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-4">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Model hash</p>
-          <p className="mt-1 font-mono text-[11px] text-cyan-300">{fmt.hash(model.modelHash, 14, 6)}</p>
-          <p className="mt-1 text-[10px] text-muted-foreground">version integrity (SHA-256)</p>
+        <div className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#0d1828] p-4 shadow-sm">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Model hash</p>
+          <p className="mt-1 font-mono text-[11px] font-semibold text-teal-700 dark:text-cyan-300">{fmt.hash(model.modelHash, 14, 6)}</p>
+          <p className="mt-1 text-[10px] text-slate-500">version integrity (SHA-256)</p>
         </div>
       </div>
 
       {/* full metrics + participants */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
+        <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold"><Activity size={14} className="text-cyan-300" /> Training metrics (current global model)</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white"><Activity size={14} className="text-teal-600 dark:text-cyan-300" /> Training metrics (current global model)</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-2 sm:grid-cols-5">
             {Object.entries(model.metrics).filter(([k]) => !["siloBaseline", "siloDetail", "initialAccuracy", "perParticipant"].includes(k)).map(([k, v]) => (
-              <div key={k} className="rounded-lg border border-border bg-background/40 p-2.5 text-center">
-                <p className="text-[9px] uppercase tracking-wider text-muted-foreground">{k}</p>
-                <p className="mt-0.5 font-mono text-sm font-semibold text-cyan-200">{typeof v === "number" ? (k.includes("acc") || k === "f1" || k.includes("precision") || k.includes("recall") || k.includes("auc") ? `${(v * 100).toFixed(1)}%` : v.toFixed(3)) : String(v)}</p>
+              <div key={k} className="rounded-xl border border-slate-200 dark:border-border/50 bg-slate-50 dark:bg-[#07101e] p-2.5 text-center">
+                <p className="text-[9px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">{k}</p>
+                <p className="mt-0.5 font-mono text-sm font-bold text-teal-700 dark:text-cyan-300">{typeof v === "number" ? (k.includes("acc") || k === "f1" || k.includes("precision") || k.includes("recall") || k.includes("auc") ? `${(v * 100).toFixed(1)}%` : v.toFixed(3)) : String(v)}</p>
               </div>
             ))}
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <Layers size={14} className="text-teal-300" /> Participants
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
+              <Layers size={14} className="text-teal-600 dark:text-teal-300" /> Participants
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger asChild><Info size={12} className="text-muted-foreground" /></TooltipTrigger>
+                  <TooltipTrigger asChild><Info size={12} className="text-slate-400" /></TooltipTrigger>
                   <TooltipContent className="border-border bg-popover text-xs">Lifetime score = Σ normalized contribution scores across rounds</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -316,14 +394,14 @@ export function ModelDetailView({ id }: { id: string }) {
           </CardHeader>
           <CardContent className="space-y-2">
             {participants.map((p) => (
-              <div key={p.id} className="flex items-center justify-between rounded-lg border border-border bg-background/40 px-3 py-2.5">
+              <div key={p.id} className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-border/50 bg-slate-50 dark:bg-[#07101e] px-3.5 py-2.5">
                 <div>
-                  <button className="text-[12.5px] font-medium text-foreground hover:text-cyan-300" onClick={() => navigate("organization", p.organization.slug)}>{p.organization.name}</button>
-                  <p className="font-mono text-[9.5px] text-muted-foreground">{p.organization.walletAddress?.slice(0, 16)}…</p>
+                  <button className="text-[12.5px] font-semibold text-slate-900 dark:text-white hover:text-teal-600 dark:hover:text-cyan-300 transition-colors" onClick={() => navigate("organization", p.organization.slug)}>{p.organization.name}</button>
+                  <p className="font-mono text-[9.5px] text-slate-500 dark:text-slate-400">{p.organization.walletAddress?.slice(0, 16)}…</p>
                 </div>
                 <div className="flex items-center gap-4 text-[11px]">
-                  <span className="text-muted-foreground">{p.roundsParticipated} rounds</span>
-                  <span className="font-mono font-semibold text-teal-300">{p.lifetimeScore.toFixed(3)}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{p.roundsParticipated} rounds</span>
+                  <span className="font-mono font-bold text-emerald-700 dark:text-[#2ee0bd]">{p.lifetimeScore.toFixed(3)}</span>
                 </div>
               </div>
             ))}

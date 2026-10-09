@@ -1,544 +1,718 @@
 "use client";
-/**
- * DataVault — Landing page (spec §9).
- */
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect } from "react";
 import { navigate } from "@/lib/client/router";
 import { useAppStore } from "@/lib/client/store";
-import { dashboardApi, type DashboardStats } from "@/lib/client/api";
-import { Button } from "@/components/ui/button";
-import { Vault, ShieldCheck, Network, Lock, Coins, ArrowRight, Play, Building2, Landmark, Wheat, Database, TrendingUp, Globe, ChevronDown } from "lucide-react";
-
-const fadeUp = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-60px" },
-  transition: { duration: 0.55 },
-};
 
 export function LandingView() {
-  const { user } = useAppStore();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const { theme, setTheme } = useAppStore();
 
-  useEffect(() => {
-    dashboardApi.stats().then(setStats).catch(() => setStats(null));
-  }, []);
-
-  const k = stats?.kpis;
+  const launchDemo = () => {
+    navigate("login");
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Nav */}
-      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
-          <div className="flex items-center gap-2.5">
-            <div className="rounded-lg bg-gradient-to-br from-cyan-400 to-teal-500 p-1.5">
-              <Vault size={18} className="text-[#04222b]" />
-            </div>
-            <div>
-              <p className="text-[15px] font-semibold tracking-tight">DataVault</p>
-              <p className="text-[9px] uppercase tracking-widest text-muted-foreground">Privacy-First AI Marketplace</p>
-            </div>
-          </div>
-          <nav className="ml-6 hidden items-center gap-6 text-[13px] text-muted-foreground md:flex">
-            <a href="#how" className="transition-colors hover:text-foreground">How it works</a>
-            <a href="#architecture" className="transition-colors hover:text-foreground">Architecture</a>
-            <a href="#usecases" className="transition-colors hover:text-foreground">Use cases</a>
-            <a href="#marketplace" className="transition-colors hover:text-foreground">Marketplace</a>
+    <div className="dv-landing-wrapper">
+      <style dangerouslySetInnerHTML={{ __html: `
+:root {
+  --navy: #07152f;
+  --navy2: #0b2142;
+  --ink: #0c1738;
+  --muted: #64748b;
+  --line: #dce8f2;
+  --soft: #f7faff;
+  --white: #fff;
+  --cyan: #10bfa8;
+  --teal: #16c6a3;
+  --green: #20b985;
+  --blue: #2e7cf6;
+  --orange: #f3a51b;
+  --shadow: 0 14px 40px rgba(15,47,79,.08);
+  --radius: 18px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: #ffffff;
+}
+a { text-decoration: none; color: inherit; }
+button { font: inherit; cursor: pointer; }
+.container { width: min(1180px, calc(100% - 40px)); margin: auto; }
+
+/* NAVBAR */
+.navbar {
+  position: sticky; top: 0; z-index: 100;
+  height: 74px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(220, 232, 242, 0.9);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.nav-inner { height: 100%; display: flex; align-items: center; gap: 34px; }
+.logo { display: flex; align-items: center; gap: 10px; min-width: 220px; }
+.logo-mark {
+  width: 38px; height: 38px; border-radius: 11px;
+  display: grid; place-items: center; color: #fff; font-weight: 900;
+  background: linear-gradient(145deg, #12d2bb, #159bdc);
+  box-shadow: 0 9px 22px rgba(19, 189, 221, 0.24);
+}
+.logo strong { font-size: 19px; display: block; line-height: 1; color: #0c1738; }
+.logo small { display: block; color: #72839a; font-size: 9px; letter-spacing: .08em; margin-top: 5px; }
+.nav-links { display: flex; align-items: center; gap: 27px; font-size: 12px; color: #51627b; }
+.nav-links a:hover { color: #078e8d; }
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.mode {
+  height: 34px; padding: 3px; border: 1px solid var(--line);
+  border-radius: 20px; background: #f4f8fc; display: flex; gap: 2px;
+}
+.mode button { width: 30px; height: 26px; border: 0; border-radius: 14px; background: transparent; color: #607188; font-size: 13px; }
+.mode button.active { background: #087f78; color: #fff; font-weight: bold; }
+.signin { border: 1px solid #cbdbe8; border-radius: 9px; padding: 9px 15px; color: #0c1738; font-weight: 700; font-size: 12px; background: #fff; }
+.demo { border: 0; border-radius: 9px; padding: 10px 17px; color: #fff; font-weight: 800; font-size: 12px; background: linear-gradient(135deg, #08b7d5, #10c9b0); box-shadow: 0 8px 22px rgba(14, 190, 193, 0.24); }
+.mobile-menu { display: none; border: 0; background: none; font-size: 22px; }
+
+/* HERO */
+.hero {
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(circle at 80% 30%, rgba(21, 190, 218, 0.16), transparent 30%),
+    radial-gradient(circle at 55% 100%, rgba(26, 198, 163, 0.10), transparent 30%),
+    linear-gradient(105deg, #ffffff 0%, #f5fbff 47%, #eaf8fb 100%);
+  border-bottom: 1px solid #e2edf4;
+}
+.hero-grid {
+  min-height: 560px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid #bfe8ee; background: #effcfd; color: #078b8e;
+  border-radius: 30px; padding: 8px 13px; font-size: 11px; font-weight: 800;
+}
+.badge i { width: 7px; height: 7px; background: #14c8a5; border-radius: 50%; }
+.hero h1 {
+  margin: 19px 0 13px;
+  font-size: clamp(43px, 5.4vw, 72px);
+  line-height: .98; letter-spacing: -.055em;
+  color: #0c1738;
+}
+.hero h1 span {
+  background: linear-gradient(90deg, #0bbbd4, #12c7a5);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero p { max-width: 620px; color: #51627b; font-size: 15px; line-height: 1.75; margin: 0; }
+.hero-buttons { display: flex; gap: 11px; margin-top: 25px; flex-wrap: wrap; }
+.btn-primary, .btn-outline {
+  height: 45px; padding: 0 18px; border-radius: 10px; font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.btn-primary {
+  border: 0; color: #fff;
+  background: linear-gradient(135deg, #08b7d5, #10c9b0);
+  box-shadow: 0 10px 25px rgba(16, 191, 168, 0.28);
+}
+.btn-outline {
+  border: 1px solid #bdd2e2; background: #fff; color: #12345b;
+  box-shadow: 0 4px 12px rgba(18, 45, 75, 0.04);
+}
+.btn-outline:hover { background: #f0fbf9; border-color: #10bfa8; color: #078b79; }
+.hero-note { font-size: 10px; color: #7890a8; margin-top: 18px; }
+
+/* NETWORK VISUAL */
+.network {
+  min-height: 410px; position: relative; display: grid; place-items: center;
+}
+.glow {
+  position: absolute; width: 340px; height: 340px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(18, 196, 210, 0.23), transparent 67%);
+  filter: blur(5px);
+}
+.globe {
+  position: relative; width: 225px; height: 225px; border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 29%, #8ff7ee 0 2%, transparent 3%),
+    radial-gradient(circle at 70% 60%, #2bcbd5 0 1.5%, transparent 2%),
+    radial-gradient(circle, #0a3155, #07152f 68%, #061021);
+  border: 1px solid rgba(40, 222, 220, 0.65);
+  box-shadow: 0 0 55px rgba(15, 206, 211, 0.28), inset 0 0 40px rgba(22, 204, 190, 0.16);
+}
+.globe:before, .globe:after {
+  content: ""; position: absolute; inset: 17px; border: 1px solid rgba(74, 226, 223, 0.32); border-radius: 50%;
+}
+.globe:after { transform: rotate(60deg) scaleX(.48); }
+.shield { position: absolute; inset: 0; display: grid; place-items: center; font-size: 56px; color: #48e6d3; text-shadow: 0 0 25px rgba(72, 230, 211, 0.5); }
+.global {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  background: #ffffff; color: #0c1738; border: 1px solid #1bbfca; border-radius: 12px;
+  padding: 10px 19px; text-align: center; box-shadow: 0 10px 30px rgba(4, 29, 55, 0.12);
+}
+.global small { display: block; color: #64748b; font-size: 9px; font-weight: 600; }
+.global b { font-size: 19px; color: #087f78; }
+.org {
+  position: absolute; width: 150px; padding: 10px 12px; border-radius: 11px;
+  background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(22, 198, 163, 0.45);
+  color: #0c1738; font-size: 10px; box-shadow: 0 10px 25px rgba(0, 30, 50, 0.08);
+}
+.org b { display: block; font-size: 11px; color: #0c1738; }
+.org span { color: #087f78; font-size: 8px; font-weight: 600; }
+.org.aiims { left: 3%; top: 21%; }
+.org.apollo { right: 3%; top: 20%; }
+.org.deccan { left: 4%; bottom: 19%; }
+.org.hdfc { right: 4%; bottom: 18%; }
+.connector { position: absolute; height: 1px; background: linear-gradient(90deg, transparent, #1bcfd2, transparent); width: 145px; }
+.c1 { left: 24%; top: 37%; transform: rotate(-19deg); }
+.c2 { right: 24%; top: 37%; transform: rotate(19deg); }
+.c3 { left: 24%; bottom: 37%; transform: rotate(19deg); }
+.c4 { right: 24%; bottom: 37%; transform: rotate(-19deg); }
+.chain-proof {
+  position: absolute; bottom: 17px; left: 50%; transform: translateX(-50%);
+  white-space: nowrap; padding: 9px 15px; border: 1px solid #20c5c1;
+  border-radius: 25px; background: rgba(255, 255, 255, 0.95); color: #087f78; font-size: 9px; font-weight: 700;
+  box-shadow: 0 10px 25px rgba(0, 30, 50, 0.08);
+}
+
+/* STATS */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 22px 0; }
+.stat {
+  background: #ffffff; border: 1px solid var(--line); border-radius: 14px; padding: 18px;
+  display: flex; align-items: center; gap: 13px; box-shadow: 0 8px 25px rgba(30, 65, 90, 0.05);
+}
+.stat-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: #e8f3ff; color: #2679e8; font-size: 16px; }
+.stat:nth-child(2) .stat-icon { background: #e4fbf5; color: #0b9d80; }
+.stat:nth-child(3) .stat-icon { background: #eef0ff; color: #6c54db; }
+.stat:nth-child(4) .stat-icon { background: #fff2d9; color: #d88900; }
+.stat b { font-size: 21px; display: block; color: #0c1738; }
+.stat span { font-size: 10px; color: var(--muted); display: block; margin-top: 3px; font-weight: 500; }
+
+/* SECTIONS */
+section.block { padding: 86px 0; }
+.eyebrow { color: #0a9b91; font-size: 10px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+.section-title { font-size: clamp(29px, 3.3vw, 44px); letter-spacing: -.04em; margin: 8px 0 13px; line-height: 1.05; color: #0c1738; }
+.section-title span { color: #0ab79f; }
+.section-desc { color: #51627b; font-size: 13px; line-height: 1.7; max-width: 650px; }
+
+/* PROBLEM */
+.problem { background: #ffffff; }
+.problem-grid { display: grid; grid-template-columns: .85fr 1.45fr; gap: 45px; align-items: start; }
+.problem-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px; }
+.info-card { border: 1px solid var(--line); border-radius: 14px; padding: 18px; background: #ffffff; transition: .2s; }
+.info-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: #bfe8ee; }
+.info-icon { width: 35px; height: 35px; border-radius: 10px; background: #eef7ff; color: #2078e7; display: grid; place-items: center; margin-bottom: 11px; }
+.info-card:nth-child(2) .info-icon { background: #e8fbf6; color: #0b9d80; }
+.info-card:nth-child(3) .info-icon { background: #fff4e5; color: #d88900; }
+.info-card:nth-child(4) .info-icon { background: #f2eefa; color: #7c3aed; }
+.info-card:nth-child(5) .info-icon { background: #e0f2fe; color: #0284c7; }
+.info-card:nth-child(6) .info-icon { background: #fee2e2; color: #dc2626; }
+.info-card b { font-size: 13px; display: block; color: #0c1738; }
+.info-card p { font-size: 11px; color: #64748b; line-height: 1.55; margin: 6px 0 0; }
+
+/* HOW */
+.dark-section {
+  color: #0c1738;
+  background: linear-gradient(135deg, #effdfa, #f5fbff);
+  border-top: 1px solid #dce8f2;
+  border-bottom: 1px solid #dce8f2;
+}
+.dark-section .section-title { color: #0c1738; }
+.dark-section .section-desc { color: #51627b; }
+.steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 32px; }
+.step {
+  position: relative; padding: 20px 15px; border: 1px solid #cdece7; border-radius: 13px;
+  background: #ffffff; box-shadow: 0 4px 15px rgba(18, 45, 75, 0.04);
+}
+.step:not(:last-child):after { content: "→"; position: absolute; right: -12px; top: 50%; color: #10bfa8; font-size: 18px; z-index: 2; font-weight: bold; }
+.step-num { font-size: 10px; color: #087f78; font-weight: 900; }
+.step-icon { font-size: 24px; margin: 15px 0 10px; }
+.step b { font-size: 12px; display: block; color: #0c1738; }
+.step p { font-size: 9.5px; line-height: 1.55; color: #64748b; margin: 4px 0 0; }
+
+/* ARCHITECTURE */
+.arch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 32px; }
+.arch-card { border: 1px solid var(--line); border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 8px 25px rgba(24, 62, 88, 0.04); }
+.arch-card h3 { font-size: 15px; margin: 10px 0 7px; color: #0c1738; }
+.arch-card p { font-size: 11px; line-height: 1.55; color: #64748b; }
+.arch-list { list-style: none; padding: 0; margin: 14px 0 0; }
+.arch-list li { font-size: 10.5px; color: #51627b; padding: 7px 0; border-top: 1px solid #edf2f6; }
+.arch-list li:before { content: "✓"; color: #0aa789; font-weight: 900; margin-right: 7px; }
+.arch-tag { display: inline-block; padding: 6px 8px; border-radius: 8px; background: #edf9f7; color: #078a77; font-size: 9px; font-weight: 800; }
+
+/* USE CASES */
+.usecases { background: #f6fbfe; }
+.use-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
+.use-card { background: #ffffff; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 8px 30px rgba(24, 62, 88, 0.05); }
+.use-img { height: 135px; display: grid; place-items: center; background: linear-gradient(135deg, #d9eef8, #e6fbf4); font-size: 55px; }
+.use-body { padding: 18px; }
+.use-label { font-size: 9px; color: #0a9c90; font-weight: 850; text-transform: uppercase; }
+.use-body h3 { font-size: 15px; margin: 7px 0; color: #0c1738; }
+.use-body p { font-size: 11px; line-height: 1.6; color: #64748b; margin-bottom: 12px; }
+.metric { font-size: 16px; color: #079a7d; font-weight: 850; }
+.metric small { font-size: 10px; color: #64748b; font-weight: 500; }
+
+/* SECURITY */
+.security-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.check-list { margin: 23px 0 0; padding: 0; list-style: none; }
+.check-list li { padding: 9px 0; font-size: 12px; color: #51627b; border-bottom: 1px solid #edf2f6; }
+.check-list b { color: #0c1738; font-weight: 700; }
+.live-panel { border-radius: 18px; padding: 21px; background: linear-gradient(145deg, #f0fdf9, #f7faff); border: 1px solid #cdece7; color: #0c1738; box-shadow: 0 15px 40px rgba(18, 45, 75, 0.06); }
+.live-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.live-head b { font-size: 15px; color: #0c1738; }
+.live-pill { font-size: 9px; background: #d8f8ef; color: #078b79; border-radius: 20px; padding: 6px 10px; font-weight: 800; }
+.live-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.live-stat { border: 1px solid var(--line); background: #ffffff; border-radius: 10px; padding: 12px; box-shadow: 0 4px 12px rgba(18, 45, 75, 0.03); }
+.live-stat span { display: block; color: #64748b; font-size: 10px; font-weight: 500; }
+.live-stat b { display: block; color: #087f78; font-size: 14px; margin-top: 5px; }
+
+/* MARKETPLACE */
+.market { background: #ffffff; color: #0c1738; border-top: 1px solid #dce8f2; border-bottom: 1px solid #dce8f2; }
+.market .section-title { color: #0c1738; }
+.market .section-desc { color: #51627b; }
+.market-grid { display: grid; grid-template-columns: 1fr 1fr .8fr; gap: 13px; margin-top: 30px; }
+.market-card { padding: 20px; border-radius: 15px; background: #f7faff; border: 1px solid #dce8f2; }
+.market-card.bad { border-color: #fca5a5; background: #fef2f2; }
+.market-card.good { border-color: #99f6e4; background: #f0fdf9; }
+.market-card h3 { font-size: 13px; color: #0c1738; }
+.market-card .quote { font-size: 18px; font-weight: 800; margin: 12px 0; }
+.bad .quote { color: #dc2626; }
+.good .quote { color: #087f78; }
+.market-card p { font-size: 11px; line-height: 1.6; color: #51627b; }
+.rewards { padding: 20px; border: 1px solid #dce8f2; border-radius: 15px; background: #f7faff; }
+.reward-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #e5edf5; font-size: 11px; color: #51627b; }
+.reward-row b { color: #087f78; font-family: monospace; font-size: 12px; }
+
+/* CTA */
+.cta {
+  position: relative; overflow: hidden; text-align: center; color: #fff;
+  padding: 90px 20px;
+  background: linear-gradient(135deg, #099485, #087f78);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.08);
+}
+.cta h2 { font-size: clamp(34px, 4vw, 52px); margin: 0 0 12px; letter-spacing: -.04em; color: #fff; }
+.cta p { color: #e0fbf4; font-size: 14px; max-width: 600px; margin: 0 auto 24px; line-height: 1.65; }
+.cta .demo { background: #ffffff; color: #087f78; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); }
+.cta .btn-outline { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.45); color: #ffffff; }
+
+/* FOOTER */
+footer { border-top: 1px solid var(--line); padding: 25px 0; background: #ffffff; }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; color: #73839a; font-size: 10px; }
+.footer-links { display: flex; gap: 20px; }
+
+/* DARK MODE OVERRIDES */
+html.dark body, body.dark {
+  background: #07101d;
+  color: #eaf5ff;
+  --line: #1b3348;
+  --muted: #91a5bb;
+}
+html.dark .navbar, body.dark .navbar, html.dark footer, body.dark footer {
+  background: rgba(7, 16, 29, 0.95);
+  border-color: #183047;
+}
+html.dark .logo strong, body.dark .logo strong { color: #ffffff; }
+html.dark .nav-links, body.dark .nav-links { color: #91a5bb; }
+html.dark .nav-links a:hover, body.dark .nav-links a:hover { color: #38e1cf; }
+html.dark .mode, body.dark .mode { background: #0c1d30; border-color: #1b3348; }
+html.dark .mode button, body.dark .mode button { color: #8fa3ba; }
+html.dark .mode button.active, body.dark .mode button.active { background: #0b2b48; color: #38e1cf; }
+html.dark .signin, body.dark .signin { color: #eaf5ff; border-color: #284258; background: #0c1d30; }
+html.dark .hero, body.dark .hero {
+  background: radial-gradient(circle at 80% 30%, rgba(21, 190, 218, 0.18), transparent 30%), linear-gradient(105deg, #07101d, #0b2035);
+  border-color: #183047;
+}
+html.dark .hero h1, body.dark .hero h1 { color: #ffffff; }
+html.dark .hero p, body.dark .hero p, html.dark .section-desc, body.dark .section-desc { color: #91a5bb; }
+html.dark .btn-outline, body.dark .btn-outline {
+  background: #0c1d30; color: #eaf5ff; border-color: #284258;
+}
+html.dark .btn-outline:hover, body.dark .btn-outline:hover {
+  background: #10263e; border-color: #38e1cf; color: #38e1cf;
+}
+html.dark .stat, body.dark .stat,
+html.dark .info-card, body.dark .info-card,
+html.dark .arch-card, body.dark .arch-card,
+html.dark .use-card, body.dark .use-card {
+  background: #0d1b2b; border-color: #1b3348;
+}
+html.dark .stat b, body.dark .stat b,
+html.dark .section-title, body.dark .section-title,
+html.dark .info-card b, body.dark .info-card b,
+html.dark .arch-card h3, body.dark .arch-card h3,
+html.dark .use-body h3, body.dark .use-body h3,
+html.dark .live-head b, body.dark .live-head b {
+  color: #ffffff;
+}
+html.dark .info-card p, body.dark .info-card p,
+html.dark .arch-card p, body.dark .arch-card p,
+html.dark .use-body p, body.dark .use-body p,
+html.dark .arch-list li, body.dark .arch-list li {
+  color: #8ea4ba;
+}
+html.dark .arch-list li, body.dark .arch-list li { border-top-color: #1b3348; }
+html.dark .problem, body.dark .problem,
+html.dark .usecases, body.dark .usecases {
+  background: #081321;
+}
+html.dark .dark-section, body.dark .dark-section {
+  color: #fff;
+  background:
+    radial-gradient(circle at 70% 20%, rgba(11, 184, 205, 0.15), transparent 35%),
+    linear-gradient(135deg, #07152f, #091f3d);
+  border-color: #1c4961;
+}
+html.dark .dark-section .section-title, body.dark .dark-section .section-title { color: #fff; }
+html.dark .dark-section .section-desc, body.dark .dark-section .section-desc { color: #a6bdd0; }
+html.dark .step, body.dark .step {
+  border-color: #1c4961; background: rgba(9, 37, 65, 0.72);
+}
+html.dark .step b, body.dark .step b { color: #ffffff; }
+html.dark .step p, body.dark .step p { color: #91abc0; }
+html.dark .step:not(:last-child):after, body.dark .step:not(:last-child):after { color: #1cd5c8; }
+html.dark .check-list li, body.dark .check-list li { color: #92a7bb; border-color: #1a3043; }
+html.dark .check-list b, body.dark .check-list b { color: #e5f2ff; }
+html.dark .live-panel, body.dark .live-panel {
+  background: #07182e; border-color: #1c3a50; color: #fff;
+}
+html.dark .live-stat, body.dark .live-stat {
+  border-color: #1c3a50; background: #0a2039;
+}
+html.dark .live-stat span, body.dark .live-stat span { color: #8ca7bb; }
+html.dark .live-stat b, body.dark .live-stat b { color: #40d9c1; }
+html.dark .market, body.dark .market {
+  background: #07152f; border-color: #183047; color: #fff;
+}
+html.dark .market .section-title, body.dark .market .section-title { color: #fff; }
+html.dark .market .section-desc, body.dark .market .section-desc { color: #9cb5c9; }
+html.dark .market-card, body.dark .market-card {
+  background: #0b2340; border-color: #1a4860; color: #fff;
+}
+html.dark .market-card h3, body.dark .market-card h3 { color: #fff; }
+html.dark .market-card p, body.dark .market-card p { color: #9db5c7; }
+html.dark .rewards, body.dark .rewards {
+  background: #0b2340; border-color: #1a4860; color: #fff;
+}
+html.dark .rewards h3, body.dark .rewards h3 { color: #fff; }
+html.dark .reward-row, body.dark .reward-row {
+  border-bottom-color: #17394e; color: #9db5c7;
+}
+html.dark .reward-row b, body.dark .reward-row b { color: #40dbc3; }
+html.dark .cta, body.dark .cta {
+  background:
+    radial-gradient(circle at 70% 50%, rgba(13, 200, 210, 0.22), transparent 28%),
+    linear-gradient(135deg, #07152f, #0a2947);
+}
+html.dark .cta .btn-outline, body.dark .cta .btn-outline {
+  background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); color: #fff;
+}
+html.dark .global, body.dark .global {
+  background: #092442; color: #fff; border-color: #1bbfca;
+}
+html.dark .global small, body.dark .global small { color: #8eb2c7; }
+html.dark .global b, body.dark .global b { color: #43e2cf; }
+html.dark .org, body.dark .org {
+  background: rgba(7, 27, 50, 0.92); border-color: rgba(28, 202, 211, 0.55); color: #fff;
+}
+html.dark .org b, body.dark .org b { color: #fff; }
+html.dark .org span, body.dark .org span { color: #75cfd0; }
+html.dark .chain-proof, body.dark .chain-proof {
+  background: rgba(6, 28, 49, 0.93); border-color: #20c5c1; color: #b9e8e6;
+}
+html.dark footer, body.dark footer { color: #7890a5; }
+
+/* RESPONSIVE */
+@media(max-width: 1000px) {
+  .nav-links { display: none; }
+  .mobile-menu { display: block; margin-left: auto; }
+  .nav-right { margin-left: 0; }
+  .logo { min-width: 0; }
+  .hero-grid { grid-template-columns: 1fr; min-height: auto; padding: 75px 0 40px; }
+  .network { min-height: 390px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .steps { grid-template-columns: repeat(2, 1fr); }
+  .step:not(:last-child):after { display: none; }
+  .arch-grid, .use-grid { grid-template-columns: 1fr; }
+  .problem-grid, .security-grid { grid-template-columns: 1fr; }
+  .market-grid { grid-template-columns: 1fr; }
+}
+@media(max-width: 620px) {
+  .container { width: min(100% - 24px, 1180px); }
+  .nav-right .mode, .signin { display: none; }
+  .hero h1 { font-size: 43px; }
+  .hero p { font-size: 13px; }
+  .network { transform: scale(.9); margin: -15px; }
+  .stats { grid-template-columns: 1fr; }
+  section.block { padding: 62px 0; }
+  .problem-cards { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
+  .live-grid { grid-template-columns: 1fr; }
+  .footer-inner { flex-direction: column; gap: 12px; }
+}
+` }} />
+      
+      <header className="navbar">
+        <div className="container nav-inner">
+          <a className="logo" href="#">
+            <div className="logo-mark">◇</div>
+            <div><strong>DataVault</strong><small>PRIVACY-FIRST AI MARKETPLACE</small></div>
+          </a>
+
+          <nav className="nav-links">
+            <a href="#how">How it works</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#usecases">Use cases</a>
+            <a href="#marketplace">Marketplace</a>
           </nav>
-          <div className="ml-auto flex items-center gap-2">
-            {user ? (
-              <Button size="sm" className="bg-cyan-500 text-[#04222b] hover:bg-cyan-400" onClick={() => navigate("dashboard")}>
-                Open Dashboard <ArrowRight size={14} />
-              </Button>
-            ) : (
-              <>
-                <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => navigate("login")}>
-                  Sign in
-                </Button>
-                <Button size="sm" className="bg-cyan-500 text-[#04222b] hover:bg-cyan-400" onClick={() => navigate("login")}>
-                  Launch Demo <Play size={14} />
-                </Button>
-              </>
-            )}
+
+          <div className="nav-right">
+            <div className="mode" role="group" aria-label="Theme switcher">
+              <button
+                id="light"
+                type="button"
+                className={theme === "light" ? "active" : ""}
+                onClick={() => setTheme("light")}
+                title="Light theme"
+                aria-label="Light theme"
+              >
+                ☼
+              </button>
+              <button
+                id="dark"
+                type="button"
+                className={theme === "dark" ? "active" : ""}
+                onClick={() => setTheme("dark")}
+                title="Dark theme"
+                aria-label="Dark theme"
+              >
+                ●
+              </button>
+            </div>
+            <button className="signin" onClick={() => navigate("login")}>Sign in</button>
+            <button className="demo" onClick={() => launchDemo()}>Launch Demo →</button>
           </div>
+          <button className="mobile-menu" aria-label="Toggle navigation">☰</button>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="grid-bg absolute inset-0" />
-        <div className="absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[120px]" />
-        <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-20 sm:px-6 sm:pt-28">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mx-auto max-w-3xl text-center">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-500/25 bg-cyan-500/10 px-3.5 py-1.5 text-[12px] font-medium text-cyan-300">
-              <ShieldCheck size={13} />
-              Raw data never leaves the data owner
-            </div>
-            <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl">
-              Train AI together.
-              <br />
-              <span className="bg-gradient-to-r from-cyan-300 via-teal-300 to-cyan-200 bg-clip-text text-transparent text-glow">Keep your data.</span>
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-              DataVault enables organizations to collaboratively build AI models without sharing raw data.
-              Federated learning, secure aggregation and blockchain-verified rewards — designed for privacy-conscious
-              collaborative AI in India&apos;s data-rich but siloed ecosystem.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button size="lg" className="h-11 bg-cyan-500 px-6 text-[#04222b] hover:bg-cyan-400" onClick={() => navigate("login")}>
-                <Play size={16} /> Launch Demo
-              </Button>
-              <Button size="lg" variant="outline" className="h-11 border-cyan-500/30 bg-cyan-500/5 px-6 text-cyan-300 hover:bg-cyan-500/10" onClick={() => navigate("about")}>
-                Explore Architecture
-              </Button>
-              <Button size="lg" variant="ghost" className="h-11 px-6 text-muted-foreground" onClick={() => navigate("login")}>
-                <Network size={15} /> View Live Network
-              </Button>
-            </div>
-            <p className="mt-4 text-[11px] text-muted-foreground/70">
-              Research / Hackathon Demonstration · 100% synthetic demo data
-            </p>
-          </motion.div>
-
-          {/* Live stats bar */}
-          <motion.div {...fadeUp} className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-3 sm:grid-cols-4">
-            <LiveStat label="Organizations" value={k ? k.organizations : "—"} icon={<Building2 size={14} />} />
-            <LiveStat label="Federation Rounds" value={k ? k.federationRounds : "—"} icon={<Network size={14} />} />
-            <LiveStat label="Protected Updates" value={k ? k.encryptedUpdates + k.totalContributions : "—"} icon={<Lock size={14} />} />
-            <LiveStat label="Rewards Distributed" value={k ? `${k.rewardsDistributed.toLocaleString("en-IN")} DATA` : "—"} icon={<Coins size={14} />} />
-          </motion.div>
-
-          {/* Hero diagram */}
-          <motion.div {...fadeUp} className="mt-14">
-            <HeroDiagram stats={stats} />
-          </motion.div>
-        </div>
-        <div className="flex justify-center pb-6 text-muted-foreground/50">
-          <ChevronDown size={20} className="animate-bounce" />
-        </div>
-      </section>
-
-      {/* Problem */}
-      <section className="border-t border-border/60 bg-card/20 py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300">The Problem</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight">Why data silos matter</h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
-              Organizations sit on valuable data but cannot share it — privacy regulations, security concerns,
-              competitive sensitivity and data ownership make centralizing raw data impossible. The result:
-              every organization trains weaker models alone.
-            </p>
-          </motion.div>
-          <motion.div {...fadeUp} className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              { t: "Privacy regulations", d: "DPDP, HIPAA-style and sectoral rules restrict raw data movement across organizational boundaries." },
-              { t: "Security & compliance", d: "Centralizing sensitive records creates honeypots and breach liability no one wants to own." },
-              { t: "Competitive sensitivity", d: "Customer records, transactions and field data are strategic assets organizations won't hand over." },
-              { t: "Data ownership", d: "Legal ownership and consent chains must remain with the data controller — not a third party." },
-              { t: "Siloed learning", d: "Models trained on one organization's slice inherit its bias and generalize poorly across the network." },
-              { t: "No fair incentives", d: "Without verifiable contribution tracking, collaborative AI has no trust or reward layer." },
-            ].map((item) => (
-              <div key={item.t} className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-cyan-500/30">
-                <p className="text-sm font-semibold text-foreground">{item.t}</p>
-                <p className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground">{item.d}</p>
+      <main>
+        <section className="hero">
+          <div className="container hero-grid">
+            <div>
+              <div className="badge"><i></i> Raw data never leaves the data owner</div>
+              <h1>Train AI together.<br /><span>Keep your data.</span></h1>
+              <p>
+                DataVault enables organizations to collaboratively build AI models without sharing raw data.
+                Federated learning, secure aggregation and blockchain-verified rewards — designed for
+                privacy-conscious collaborative AI in India&apos;s data-rich but siloed ecosystem.
+              </p>
+              <div className="hero-buttons">
+                <button className="btn-primary" onClick={() => launchDemo()}>▷ &nbsp; Launch Demo</button>
+                <a className="btn-outline" href="#architecture">Explore Architecture</a>
+                <a className="btn-outline" href="#how">⌘ &nbsp; View Live Network</a>
               </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+              <div className="hero-note">Research / Hackathon Demonstration · 100% synthetic demo data</div>
+            </div>
 
-      {/* How it works */}
-      <section id="how" className="py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300">How DataVault Works</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight">Three privacy layers, one network</h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
+            <div className="network">
+              <div className="glow"></div>
+              <div className="global"><small>GLOBAL MODEL</small><b>83.2%</b></div>
+              <div className="globe"><div className="shield">♢</div></div>
+
+              <div className="connector c1"></div><div className="connector c2"></div>
+              <div className="connector c3"></div><div className="connector c4"></div>
+
+              <div className="org aiims"><b>AIIMS</b><span>Local data · encrypted Δ</span></div>
+              <div className="org apollo"><b>Apollo</b><span>Local data · encrypted Δ</span></div>
+              <div className="org deccan"><b>Deccan</b><span>Local data · encrypted Δ</span></div>
+              <div className="org hdfc"><b>HDFC</b><span>Local data · encrypted Δ</span></div>
+
+              <div className="chain-proof">◈ On-chain proofs · 19 blocks · 16,000 DATA rewarded</div>
+            </div>
+          </div>
+        </section>
+
+        <section className="container">
+          <div className="stats">
+            <div className="stat"><div className="stat-icon">♟</div><div><b>10</b><span>Organizations</span></div></div>
+            <div className="stat"><div className="stat-icon">▱</div><div><b>16</b><span>Federation Rounds</span></div></div>
+            <div className="stat"><div className="stat-icon">◇</div><div><b>48</b><span>Protected Updates</span></div></div>
+            <div className="stat"><div className="stat-icon">◉</div><div><b>16,000 DATA</b><span>Rewards Distributed</span></div></div>
+          </div>
+        </section>
+
+        <section className="block problem" id="problem">
+          <div className="container problem-grid">
+            <div>
+              <div className="eyebrow">The Problem</div>
+              <h2 className="section-title">Why <span>data silos</span> matter</h2>
+              <p className="section-desc">
+                Organizations sit on valuable data but cannot share it — privacy regulations,
+                security concerns, competitive sensitivity and data ownership make centralizing
+                raw data impossible. The result: every organization trains weaker models alone.
+              </p>
+              <a className="btn-outline" style={{ display: "inline-flex", alignItems: "center", marginTop: "22px" }} href="#how">Learn more →</a>
+            </div>
+
+            <div className="problem-cards">
+              <div className="info-card"><div className="info-icon">▣</div><b>Privacy regulations</b><p>DPDP, HIPAA-style and sectoral rules restrict raw data movement.</p></div>
+              <div className="info-card"><div className="info-icon">♢</div><b>Security & compliance</b><p>Centralizing sensitive records creates honeypots and breach risks.</p></div>
+              <div className="info-card"><div className="info-icon">▥</div><b>Competitive sensitivity</b><p>Customer records and transactions are strategic assets.</p></div>
+              <div className="info-card"><div className="info-icon">♙</div><b>Data ownership</b><p>Legal ownership and consent remain with the data controller.</p></div>
+              <div className="info-card"><div className="info-icon">▤</div><b>Siloed learning</b><p>Single-organization models can inherit local bias.</p></div>
+              <div className="info-card"><div className="info-icon">⚠</div><b>No fair incentives</b><p>Verifiable contribution tracking creates a trust and reward layer.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section className="block dark-section" id="how">
+          <div className="container">
+            <div className="eyebrow">How DataVault Works</div>
+            <h2 className="section-title">Three privacy layers, one network</h2>
+            <p className="section-desc">
               A global model travels to each organization. Only privacy-protected model updates travel back.
               Contributions are proven on-chain and rewarded in DATA tokens.
             </p>
-          </motion.div>
 
-          <div className="mt-12 grid gap-5 lg:grid-cols-3">
-            <LayerCard
-              step="Layer 1"
-              icon={<Network size={20} />}
-              title="Federated Learning"
-              points={["Global model distributed to participants", "Local training on each organization's data", "Only model weight updates are produced", "FedAvg aggregation creates the next global model"]}
-            />
-            <LayerCard
-              step="Layer 2"
-              icon={<Lock size={20} />}
-              title="Privacy Computing"
-              points={["Pairwise zero-sum masking on every update", "Masks cancel — aggregator sees only the aggregate", "AES-256-GCM encryption in ENCRYPTION mode", "Production path: TenSEAL CKKS homomorphic encryption"]}
-            />
-            <LayerCard
-              step="Layer 3"
-              icon={<Coins size={20} />}
-              title="Blockchain Incentives"
-              points={["SHA-256 hash-chained contribution proofs", "Transparent contribution scoring formula", "1000 DATA reward pool per round", "DataVaultRewards.sol smart contract for EVM chains"]}
-            />
+            <div className="steps">
+              <div className="step"><div className="step-num">01</div><div className="step-icon">▤</div><b>Local Data</b><p>Raw data stays inside the organization.</p></div>
+              <div className="step"><div className="step-num">02</div><div className="step-icon">⚙</div><b>Local Training</b><p>Models train locally on participant data.</p></div>
+              <div className="step"><div className="step-num">03</div><div className="step-icon">♢</div><b>Encrypted Updates</b><p>Masked and encrypted model updates travel back.</p></div>
+              <div className="step"><div className="step-num">04</div><div className="step-icon">⌘</div><b>Secure Aggregation</b><p>Individual updates are hidden from the aggregator.</p></div>
+              <div className="step"><div className="step-num">05</div><div className="step-icon">▥</div><b>Better AI</b><p>The global model improves across the network.</p></div>
+            </div>
           </div>
+        </section>
 
-          <motion.div {...fadeUp} className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              "Problem → Data Silos", "→ Local Training", "→ Encrypted Updates", "→ Secure Aggregation",
-              "→ Better AI", "→ Contribution Proof", "→ Token Rewards", "→ Verified Trust",
-            ].map((s, i) => (
-              <div key={i} className="rounded-lg border border-cyan-500/15 bg-cyan-500/[0.05] px-4 py-3 text-center text-[12px] font-medium text-cyan-200">
-                {s}
+        <section className="block" id="architecture">
+          <div className="container">
+            <div className="eyebrow">Architecture</div>
+            <h2 className="section-title">Privacy-preserving by construction</h2>
+            <p className="section-desc">End-to-end system design combining federated learning, privacy protection and blockchain incentives.</p>
+
+            <div className="arch-grid">
+              <div className="arch-card">
+                <span className="arch-tag">DATA OWNER SIDE</span>
+                <h3>Organization</h3><p>Local raw data never leaves the participant environment.</p>
+                <ul className="arch-list">
+                  <li>Local Training (SGD)</li><li>Model Update Δ</li><li>Masking + AES-256-GCM</li><li>Raw data: 0 bytes transferred</li>
+                </ul>
               </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Architecture snapshot */}
-      <section id="architecture" className="border-t border-border/60 bg-card/20 py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300">Architecture</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight">Privacy-preserving by construction</h2>
-          </motion.div>
-          <motion.div {...fadeUp} className="mt-10 overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8">
-            <ArchFlow />
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Use cases */}
-      <section id="usecases" className="py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300">Use Cases</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight">Built for India&apos;s data ecosystem</h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
-              Healthcare, banking, agriculture, insurance, research and the public sector — data-rich, siloed, privacy-first.
-            </p>
-          </motion.div>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            <UseCase
-              icon={<Building2 size={20} />}
-              title="Healthcare"
-              headline="Federated Cancer Prediction Network"
-              body="Hospitals co-train a cancer-risk classifier across synthetic biomarker datasets. Raw patient records never leave the hospital environment."
-              metric={stats?.modelProgression[0] ? `${(stats.modelProgression[0].current * 100).toFixed(1)}% accuracy` : null}
-              baseline={stats?.modelProgression[0] ? `vs ${(stats.modelProgression[0].baseline * 100).toFixed(1)}% siloed` : null}
-              action={() => navigate("federation")}
-            />
-            <UseCase
-              icon={<Landmark size={20} />}
-              title="Finance"
-              headline="Cross-Bank Fraud Detection"
-              body="Banks detect fraud patterns across institutions without exposing transaction streams. Precision, recall, F1 and ROC-AUC tracked per round."
-              metric={stats?.modelProgression[1] ? `${(stats.modelProgression[1].current * 100).toFixed(1)}% accuracy` : null}
-              baseline={stats?.modelProgression[1] ? `vs ${(stats.modelProgression[1].baseline * 100).toFixed(1)}% siloed` : null}
-              action={() => navigate("login")}
-            />
-            <UseCase
-              icon={<Wheat size={20} />}
-              title="Agriculture"
-              headline="Crop Yield Prediction"
-              body="Farmer collectives predict yields from soil and weather telemetry. Rewards redeem for seed & fertilizer subsidies (demo concept)."
-              metric={stats?.modelProgression[2] ? `R² ${stats.modelProgression[2].current.toFixed(2)}` : null}
-              baseline={stats?.modelProgression[2] ? `vs R² ${stats.modelProgression[2].baseline.toFixed(2)} siloed` : null}
-              action={() => navigate("login")}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Security */}
-      <section className="border-t border-border/60 bg-card/20 py-20">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-2">
-          <motion.div {...fadeUp}>
-            <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300">Security & Privacy</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight">Your raw data remains inside your organization</h2>
-            <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
-              DataVault is architected so that exposing raw records is not an option, not a policy.
-              Raw data shared: <span className="font-semibold text-emerald-400">0 bytes</span> — enforced by design
-              and verified by the audit layer.
-            </p>
-            <div className="mt-6 space-y-3">
-              {[
-                "Raw Data: NOT SHARED — physically stays in participant environments",
-                "Model Updates: SHARED — privacy-protected (masked + encrypted) only",
-                "Secure Aggregation: ENABLED — individual updates never visible",
-                "Blockchain Audit: ENABLED — hash-chained contribution proofs",
-                "RBAC + JWT sessions + rate limiting + input validation",
-              ].map((line) => (
-                <div key={line} className="flex items-start gap-2.5 text-[13px] text-foreground/90">
-                  <ShieldCheck size={15} className="mt-0.5 shrink-0 text-emerald-400" />
-                  {line}
-                </div>
-              ))}
-            </div>
-            <p className="mt-6 rounded-lg border border-amber-500/25 bg-amber-500/5 p-3 text-[11px] leading-relaxed text-amber-300/90">
-              DataVault is a research and hackathon demonstration. It is not legal or regulatory compliance advice.
-              Production deployments must undergo organization-specific privacy, security, legal, and regulatory review.
-            </p>
-          </motion.div>
-          <motion.div {...fadeUp} className="rounded-2xl border border-border bg-card p-6">
-            <p className="text-sm font-semibold">Live privacy posture</p>
-            <div className="mt-4 space-y-2.5">
-              {[
-                { label: "Raw data shared", value: "0 bytes" },
-                { label: "Encrypted updates", value: k ? k.encryptedUpdates.toLocaleString("en-IN") : "—" },
-                { label: "Data owners", value: k ? k.participants : "—" },
-                { label: "Privacy events", value: k ? k.privacyEvents : "—" },
-                { label: "Encryption", value: "AES-256-GCM available" },
-                { label: "Secure aggregation", value: "Zero-sum masking" },
-                { label: "Blockchain audit", value: k ? `${k.blocks} blocks` : "—" },
-              ].map((row) => (
-                <div key={row.label} className="flex items-center justify-between rounded-lg border border-border/60 bg-background/40 px-3.5 py-2.5">
-                  <span className="text-[12px] text-muted-foreground">{row.label}</span>
-                  <span className="font-mono text-[12px] font-medium text-emerald-400">{row.value}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Marketplace + rewards */}
-      <section id="marketplace" className="py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest text-cyan-300">Marketplace & Rewards</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight">Collaborate on AI — never sell data</h2>
-          </motion.div>
-          <div className="mt-10 grid gap-5 lg:grid-cols-2">
-            <motion.div {...fadeUp} className="rounded-2xl border border-border bg-card p-6">
-              <div className="flex items-center gap-2 text-cyan-300"><Database size={16} /><p className="text-sm font-semibold text-foreground">What DataVault IS NOT</p></div>
-              <p className="mt-3 text-2xl font-semibold text-red-400/90">“Sell your customer data.”</p>
-              <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-                No raw datasets are ever listed, transferable or downloadable. The privacy guard blocks and logs every raw-access attempt.
-              </p>
-              <div className="mt-5 flex items-center gap-2 text-teal-300"><TrendingUp size={16} /><p className="text-sm font-semibold text-foreground">What DataVault IS</p></div>
-              <p className="mt-2 text-lg font-semibold text-teal-300">“Collaborate on AI without transferring raw data.”</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-                Federated models, training collaborations and privacy-preserving computation services — with
-                performance, privacy method and contributors visible on every listing.
-              </p>
-            </motion.div>
-            <motion.div {...fadeUp} className="rounded-2xl border border-border bg-card p-6">
-              <p className="text-sm font-semibold text-foreground">Transparent token rewards</p>
-              <p className="mt-1 text-[12px] text-muted-foreground">reward = pool × normalized contribution score</p>
-              <div className="mt-5 space-y-3">
-                {(stats?.contributionByOrg ?? []).slice(0, 5).map((c) => {
-                  const max = Math.max(...(stats?.contributionByOrg ?? [{ rewards: 1 }]).map((x) => x.rewards), 1);
-                  return (
-                    <div key={c.org}>
-                      <div className="flex items-center justify-between text-[12px]">
-                        <span className="truncate text-foreground/90">{c.org}</span>
-                        <span className="font-mono text-cyan-300">{c.rewards.toLocaleString("en-IN")} DATA</span>
-                      </div>
-                      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-muted">
-                        <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-teal-400" style={{ width: `${(c.rewards / max) * 100}%` }} />
-                      </div>
-                    </div>
-                  );
-                })}
-                {!stats && <p className="text-xs text-muted-foreground">Loading live reward distribution…</p>}
+              <div className="arch-card">
+                <span className="arch-tag">PLATFORM SIDE</span>
+                <h3>Secure Aggregator</h3><p>Privacy-protected updates are combined to create the next global model.</p>
+                <ul className="arch-list">
+                  <li>Secure aggregation</li><li>FedAvg → Global Model</li><li>Model registry + hashes</li><li>Contribution scoring</li>
+                </ul>
               </div>
-              <Button variant="outline" size="sm" className="mt-5 w-full border-cyan-500/30 bg-cyan-500/5 text-cyan-300" onClick={() => navigate(user ? "marketplace" : "login")}>
-                Explore the marketplace <ArrowRight size={14} />
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="relative overflow-hidden border-t border-border/60 py-24">
-        <div className="absolute left-1/2 top-1/2 h-[300px] w-[640px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/10 blur-[100px]" />
-        <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <motion.div {...fadeUp}>
-            <Globe size={28} className="mx-auto text-cyan-300" />
-            <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">Train Together. Share Nothing.</h2>
-            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
-              Spin up the demo network, run a live federated round in seconds, watch updates get encrypted,
-              aggregated, proven on-chain and rewarded — all on synthetic data.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Button size="lg" className="h-11 bg-cyan-500 px-7 text-[#04222b] hover:bg-cyan-400" onClick={() => navigate("login")}>
-                <Play size={16} /> Launch the demo
-              </Button>
-              <Button size="lg" variant="outline" className="h-11 px-7" onClick={() => navigate("about")}>
-                Read the architecture
-              </Button>
+              <div className="arch-card">
+                <span className="arch-tag">TRUST LAYER</span>
+                <h3>Blockchain Ledger</h3><p>Contribution proofs and rewards create an auditable incentive layer.</p>
+                <ul className="arch-list">
+                  <li>SHA-256 contribution proofs</li><li>1000 DATA reward pool</li><li>Smart contract (EVM)</li><li>Wallets + claim transactions</li>
+                </ul>
+              </div>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <footer className="border-t border-border bg-card/30 py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 text-[11px] text-muted-foreground sm:flex-row sm:px-6">
-          <div className="flex items-center gap-2">
-            <Vault size={13} className="text-cyan-400" />
-            <span>© 2026 DataVault — Privacy-First AI Collaboration Marketplace</span>
           </div>
-          <p>Research / Hackathon Demonstration · Synthetic data only · Not compliance advice</p>
+        </section>
+
+        <section className="block usecases" id="usecases">
+          <div className="container">
+            <div className="eyebrow">Use Cases</div>
+            <h2 className="section-title">Built for India&apos;s <span>data ecosystem</span></h2>
+            <p className="section-desc">Healthcare, banking, agriculture, insurance, research and the public sector — data-rich, siloed, privacy-first.</p>
+
+            <div className="use-grid">
+              <article className="use-card">
+                <div className="use-img">🏥</div>
+                <div className="use-body"><div className="use-label">Healthcare</div><h3>Federated Cancer Prediction</h3><p>Hospitals co-train risk models across synthetic biomarker datasets without moving raw patient records.</p><div className="metric">89.0% <small>accuracy · +5.3 vs silo</small></div></div>
+              </article>
+              <article className="use-card">
+                <div className="use-img">🏦</div>
+                <div className="use-body"><div className="use-label">Finance</div><h3>Cross-Bank Fraud Detection</h3><p>Banks detect fraud patterns across institutions without exposing transaction streams.</p><div className="metric">91.5% <small>accuracy · +0.7 vs silo</small></div></div>
+              </article>
+              <article className="use-card">
+                <div className="use-img">🌾</div>
+                <div className="use-body"><div className="use-label">Agriculture</div><h3>Crop Yield Prediction</h3><p>Farmer collectives predict yields from soil and weather telemetry with privacy-preserving collaboration.</p><div className="metric">R² 0.69 <small>vs R² 0.65 siloed</small></div></div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="block">
+          <div className="container security-grid">
+            <div>
+              <div className="eyebrow">Security & Privacy</div>
+              <h2 className="section-title">Your raw data remains <span>inside your organization</span></h2>
+              <p className="section-desc">DataVault is architected so that exposing raw records is not an option. Privacy controls protect the collaboration layer.</p>
+              <ul className="check-list">
+                <li><b>Raw Data:</b> NOT SHARED — stays in participant environments</li>
+                <li><b>Model Updates:</b> SHARED — privacy-protected only</li>
+                <li><b>Secure Aggregation:</b> ENABLED — individual updates hidden</li>
+                <li><b>Blockchain Audit:</b> ENABLED — contribution proofs</li>
+                <li><b>Access:</b> RBAC + JWT sessions + rate limiting</li>
+              </ul>
+            </div>
+
+            <div className="live-panel">
+              <div className="live-head"><b>Live privacy posture</b><span className="live-pill">● LIVE</span></div>
+              <div className="live-grid">
+                <div className="live-stat"><span>Raw data shared</span><b>0 bytes</b></div>
+                <div className="live-stat"><span>Encryption</span><b>AES-256-GCM</b></div>
+                <div className="live-stat"><span>Encrypted updates</span><b>48</b></div>
+                <div className="live-stat"><span>Secure aggregation</span><b>Enabled</b></div>
+                <div className="live-stat"><span>Data owners</span><b>9+</b></div>
+                <div className="live-stat"><span>Blockchain audit</span><b>19 blocks</b></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="block market" id="marketplace">
+          <div className="container">
+            <div className="eyebrow">Marketplace & Rewards</div>
+            <h2 className="section-title">Collaborate on AI — <span>never sell data</span></h2>
+            <p className="section-desc">Federated models, training collaborations and privacy-preserving computation services — with performance and contribution visibility.</p>
+
+            <div className="market-grid">
+              <div className="market-card bad">
+                <h3>What DataVault IS NOT</h3>
+                <div className="quote">“Sell your customer data.”</div>
+                <p>No raw datasets are listed, transferable or downloadable. Raw-access attempts are blocked and logged.</p>
+              </div>
+              <div className="market-card good">
+                <h3>What DataVault IS</h3>
+                <div className="quote">“Collaborate on AI without transferring raw data.”</div>
+                <p>Federated models, privacy-preserving computation and transparent contribution tracking.</p>
+              </div>
+              <div className="rewards">
+                <h3 style={{ fontSize: "13px", marginTop: "0" }}>Top reward claimers</h3>
+                <div className="reward-row"><span>AIIMS Demo Center</span><b>2,136 DATA</b></div>
+                <div className="reward-row"><span>Apollo Demo Hospital</span><b>2,431 DATA</b></div>
+                <div className="reward-row"><span>Deccan Agri Collective</span><b>1,564 DATA</b></div>
+                <div className="reward-row"><span>Green Valley Farm</span><b>1,599 DATA</b></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="cta">
+          <div className="container">
+            <div className="eyebrow" style={{ color: "#d9fbf3" }}>DataVault</div>
+            <h2>Train Together. Share Nothing.</h2>
+            <p>Spin up the demo network, run a federated round and watch privacy-protected updates get aggregated, proven and rewarded — all on synthetic data.</p>
+            <div className="hero-buttons" style={{ justifyContent: "center" }}>
+              <button className="demo" onClick={() => launchDemo()}>▷ &nbsp; Launch the demo</button>
+              <a className="btn-outline" href="#architecture">Read the architecture</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div className="container footer-inner">
+          <div><b style={{ color: "inherit" }}>DataVault</b> · Privacy-First AI Marketplace</div>
+          <div className="footer-links"><a href="#how">How it works</a><a href="#architecture">Architecture</a><a href="#usecases">Use cases</a><span>© 2026</span></div>
         </div>
       </footer>
-    </div>
-  );
-}
-
-function LiveStat({ label, value, icon }: { label: string; value: string | number; icon: React.ReactNode }) {
-  return (
-    <div className="glass rounded-xl p-4 text-center">
-      <div className="mx-auto mb-1.5 flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500/15 text-cyan-300">{icon}</div>
-      <p className="text-xl font-semibold tracking-tight">{value}</p>
-      <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-
-function LayerCard({ step, icon, title, points }: { step: string; icon: React.ReactNode; title: string; points: string[] }) {
-  return (
-    <motion.div {...fadeUp} className="group rounded-2xl border border-border bg-card p-6 transition-colors hover:border-cyan-500/40">
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">{step}</span>
-        <div className="rounded-lg border border-cyan-500/25 bg-cyan-500/10 p-2 text-cyan-300 transition-transform group-hover:scale-110">{icon}</div>
-      </div>
-      <p className="mt-4 text-lg font-semibold">{title}</p>
-      <ul className="mt-3 space-y-2">
-        {points.map((p) => (
-          <li key={p} className="flex items-start gap-2 text-[12.5px] leading-relaxed text-muted-foreground">
-            <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-teal-400" />
-            {p}
-          </li>
-        ))}
-      </ul>
-    </motion.div>
-  );
-}
-
-function UseCase({ icon, title, headline, body, metric, baseline, action }: {
-  icon: React.ReactNode; title: string; headline: string; body: string;
-  metric: string | null; baseline: string | null; action: () => void;
-}) {
-  return (
-    <motion.div {...fadeUp} className="flex flex-col rounded-2xl border border-border bg-card p-6 transition-colors hover:border-teal-500/40">
-      <div className="flex items-center gap-2 text-teal-300">
-        {icon}
-        <span className="text-[10px] font-semibold uppercase tracking-widest">{title}</span>
-      </div>
-      <p className="mt-3 text-base font-semibold leading-snug">{headline}</p>
-      <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted-foreground">{body}</p>
-      {metric && (
-        <div className="mt-4 flex items-baseline gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2">
-          <span className="font-mono text-lg font-semibold text-emerald-400">{metric}</span>
-          {baseline && <span className="text-[10px] text-muted-foreground">{baseline}</span>}
-        </div>
-      )}
-      <button onClick={action} className="mt-4 flex items-center gap-1 text-[12px] font-medium text-cyan-300 transition-colors hover:text-cyan-200">
-        View live model <ArrowRight size={13} />
-      </button>
-    </motion.div>
-  );
-}
-
-const ARCH_TONES = {
-  cyan: "border-cyan-500/30 bg-cyan-500/10 text-cyan-200",
-  teal: "border-teal-500/30 bg-teal-500/10 text-teal-200",
-  muted: "border-border bg-muted/50 text-muted-foreground",
-  amber: "border-amber-500/30 bg-amber-500/10 text-amber-200",
-};
-
-function ArchBox({ label, tone }: { label: string; tone: "cyan" | "teal" | "muted" | "amber" }) {
-  return (
-    <div className={`rounded-lg border px-3 py-2 text-center text-[10.5px] font-medium leading-tight ${ARCH_TONES[tone]}`}>
-      {label}
-    </div>
-  );
-}
-
-const ArchArrow = () => <div className="mx-auto my-1 h-4 w-px bg-gradient-to-b from-cyan-500/50 to-transparent" />;
-
-function ArchFlow() {
-  const Box = ArchBox;
-  const Arrow = ArchArrow;
-  return (
-    <div className="grid gap-4 lg:grid-cols-3">
-      <div className="flex flex-col gap-1.5">
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Data Owner Side</p>
-        <Box label="ORGANIZATION · local raw data (never leaves)" tone="muted" />
-        <Arrow />
-        <Box label="LOCAL TRAINING (real SGD)" tone="teal" />
-        <Arrow />
-        <Box label="MODEL UPDATE Δ (weights only)" tone="teal" />
-        <Arrow />
-        <Box label="MASKING + AES-256-GCM" tone="cyan" />
-        <p className="mt-2 rounded-md bg-red-500/10 px-2 py-1 text-center text-[9.5px] text-red-300">raw data: 0 bytes transferred</p>
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Platform Side</p>
-        <Box label="SECURE AGGREGATOR (masks cancel)" tone="cyan" />
-        <Arrow />
-        <Box label="FedAvg → GLOBAL MODEL vNext" tone="cyan" />
-        <Arrow />
-        <Box label="MODEL REGISTRY + VERSION HASHES" tone="muted" />
-        <Arrow />
-        <Box label="CONTRIBUTION SCORING" tone="teal" />
-        <p className="mt-2 text-center text-[9.5px] text-muted-foreground">PostgreSQL · Audit hash-chain · RBAC</p>
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Trust Layer</p>
-        <Box label="BLOCKCHAIN LEDGER (SHA-256 chain)" tone="amber" />
-        <Arrow />
-        <Box label="CONTRIBUTION PROOFS on-chain" tone="amber" />
-        <Arrow />
-        <Box label="DATA TOKEN REWARDS (1000/round)" tone="amber" />
-        <Arrow />
-        <Box label="WALLETS + CLAIM TRANSACTIONS" tone="muted" />
-        <p className="mt-2 text-center text-[9.5px] text-muted-foreground">Solidity: DataVaultRewards.sol (EVM)</p>
-      </div>
-    </div>
-  );
-}
-
-function HeroDiagram({ stats }: { stats: DashboardStats | null }) {
-  const participants = stats?.contributionByOrg.slice(0, 3) ?? [];
-  const names = participants.length ? participants.map((p) => p.org.split(" ")[0]) : ["Apollo", "AIIMS", "Max"];
-  const positions = [
-    { x: 12, y: 8 }, { x: 78, y: 8 }, { x: 45, y: 78 },
-  ];
-  return (
-    <div className="relative mx-auto aspect-[16/9] max-w-3xl overflow-hidden rounded-2xl border border-border bg-card/60">
-      <div className="grid-bg absolute inset-0 opacity-60" />
-      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-        {positions.map((p, i) => (
-          <line key={i} x1="50" y1="42" x2={p.x + 11} y2={p.y + 8} stroke="rgba(34,211,238,0.35)" strokeWidth="0.5" className="dash-flow" />
-        ))}
-        <line x1="50" y1="42" x2="50" y2="58" stroke="rgba(45,212,191,0.5)" strokeWidth="0.7" />
-      </svg>
-      <div className="absolute left-1/2 top-[26%] -translate-x-1/2 -translate-y-1/2">
-        <div className="rounded-xl border border-cyan-500/40 bg-cyan-500/10 px-4 py-2 text-center shadow-[0_0_30px_rgba(34,211,238,0.25)]">
-          <p className="text-[10px] uppercase tracking-widest text-cyan-300">Global Model</p>
-          <p className="font-mono text-sm font-semibold text-cyan-200">{stats ? `${stats.kpis.modelAccuracy.toFixed(1)}%` : "—"}</p>
-        </div>
-      </div>
-      <div className="absolute left-1/2 top-[56%] -translate-x-1/2 -translate-y-1/2">
-        <div className="rounded-lg border border-teal-500/40 bg-teal-500/10 px-3 py-1.5 text-[10px] font-medium text-teal-200">
-          🔒 Secure Aggregator
-        </div>
-      </div>
-      {positions.map((p, i) => (
-        <div key={i} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${p.x + 11}%`, top: `${p.y + 8}%` }}>
-          <div className="rounded-xl border border-border bg-background/80 px-3 py-1.5 text-center backdrop-blur">
-            <p className="text-[10px] font-medium text-foreground/90">{names[i]}</p>
-            <p className="text-[8.5px] text-muted-foreground">🛡 local data · encrypted Δ</p>
-          </div>
-        </div>
-      ))}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-amber-500/25 bg-amber-500/10 px-3 py-1 text-[9px] text-amber-300">
-        on-chain proofs · {stats ? stats.kpis.blocks : "—"} blocks · {stats ? stats.kpis.rewardsDistributed.toLocaleString("en-IN") : "—"} DATA rewarded
-      </div>
     </div>
   );
 }

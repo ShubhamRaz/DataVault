@@ -36,11 +36,21 @@ export default function DataVaultApp() {
 
 function DataVaultInner() {
   const { route, id, navigate } = useHashRouter();
-  const { user, sessionLoading, loadSession } = useAppStore();
+  const { user, sessionLoading, loadSession, theme } = useAppStore();
 
   useEffect(() => {
     loadSession();
   }, [loadSession]);
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.body.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.body.classList.remove("dark");
+    }
+  }, [theme]);
 
   // scroll to top on route change
   useEffect(() => {
@@ -107,6 +117,10 @@ function DataVaultInner() {
         return <DashboardView />;
     }
   })();
+
+  if (route === "dashboard") {
+    return <DashboardView />;
+  }
 
   return <AppShell activeRoute={route}>{view}</AppShell>;
 }

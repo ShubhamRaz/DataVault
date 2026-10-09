@@ -78,10 +78,10 @@ export function PrivacyView() {
               ]}
             />
           </div>
-          <div className="mt-5 rounded-lg border border-red-500/25 bg-red-500/[0.06] px-4 py-3 text-center text-[12px] text-red-300">
+          <div className="mt-5 rounded-lg border border-red-200 dark:border-red-500/25 bg-red-50 dark:bg-red-500/[0.06] px-4 py-3 text-center text-[12px] font-medium text-red-800 dark:text-red-300">
             🚫 RAW DATA PATH: BLOCKED — there is no pipe, API or export path for raw records. Attempts are denied and logged.
           </div>
-          <p className="mt-3 text-center text-[13px] font-medium text-emerald-300">
+          <p className="mt-3 text-center text-[13px] font-semibold text-teal-700 dark:text-emerald-300">
             &quot;Your raw data remains inside your organization.&quot;
           </p>
         </CardContent>
@@ -138,7 +138,7 @@ export function PrivacyView() {
 
       <Card className="border-amber-500/25 bg-amber-500/[0.04]">
         <CardContent className="p-4">
-          <p className="text-[11.5px] leading-relaxed text-amber-200/80">
+          <p className="text-[11.5px] leading-relaxed text-amber-800 dark:text-amber-200/80">
             {String(statusData.disclaimer)}
           </p>
         </CardContent>
@@ -149,19 +149,19 @@ export function PrivacyView() {
 
 function PostureCard({ label, value, ok }: { label: string; value: string; ok: boolean }) {
   return (
-    <div className={`rounded-xl border p-3 ${ok ? "border-emerald-500/25 bg-emerald-500/[0.05]" : "border-border bg-card"}`}>
-      <p className="text-[9.5px] font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className="mt-1 font-mono text-[14px] font-semibold text-emerald-400">{value}</p>
+    <div className={`rounded-2xl border p-3.5 transition-all hover:border-emerald-500/40 ${ok ? "border-emerald-200 dark:border-emerald-500/25 bg-emerald-50 dark:bg-[#082223]" : "border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#0d1828]"}`}>
+      <p className="text-[9.5px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="mt-1 font-mono text-[15px] font-extrabold text-emerald-800 dark:text-[#2ee0bd]">{value}</p>
     </div>
   );
 }
 
 const TONE_CLASSES: Record<string, string> = {
-  red: "border-red-500/30 bg-red-500/[0.07] text-red-200",
-  teal: "border-teal-500/30 bg-teal-500/[0.07] text-teal-200",
-  cyan: "border-cyan-500/30 bg-cyan-500/[0.07] text-cyan-200",
-  amber: "border-amber-500/30 bg-amber-500/[0.07] text-amber-200",
-  muted: "border-border bg-muted/40 text-muted-foreground",
+  red: "border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/[0.07] text-red-800 dark:text-red-200",
+  teal: "border-teal-200 dark:border-teal-500/30 bg-teal-50 dark:bg-teal-500/[0.07] text-teal-800 dark:text-teal-200",
+  cyan: "border-cyan-200 dark:border-cyan-500/30 bg-cyan-50 dark:bg-cyan-500/[0.07] text-cyan-800 dark:text-cyan-200",
+  amber: "border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/[0.07] text-amber-800 dark:text-amber-200",
+  muted: "border-slate-200 dark:border-border bg-slate-50 dark:bg-muted/40 text-slate-700 dark:text-muted-foreground",
 };
 
 function FlowColumn({ title, steps }: { title: string; steps: { icon: React.ReactNode; label: string; tone: string }[] }) {

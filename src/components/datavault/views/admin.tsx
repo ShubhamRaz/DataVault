@@ -70,11 +70,11 @@ export function AdminView() {
       />
 
       {/* Demo controls (spec §56) */}
-      <Card className="border-cyan-500/25 bg-gradient-to-br from-cyan-500/[0.05] to-transparent">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold"><Sparkles size={15} className="text-cyan-300" /> Demo Controls — one click each, all real actions</CardTitle>
+      <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
+        <CardHeader className="border-b border-slate-200 dark:border-[#1b3046]/60 pb-3">
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white"><Sparkles size={15} className="text-teal-600 dark:text-cyan-300" /> Demo Controls — one click each, all real actions</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-5">
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             <DemoControl
               icon={<Play size={16} />}
@@ -128,7 +128,7 @@ export function AdminView() {
               tone="red"
             />
           </div>
-          <p className="mt-3 text-[10.5px] text-muted-foreground">
+          <p className="mt-3 text-[10.5px] text-slate-400">
             Initialization runs REAL federated training in the background (~2–4 seconds) — historical rounds in the dashboard are genuine computations, not fabricated numbers.
           </p>
         </CardContent>
@@ -227,36 +227,38 @@ function DemoControl({ icon, title, desc, onClick, busy, disabled, tone }: {
   tone: "cyan" | "teal" | "violet" | "amber" | "red";
 }) {
   const tones: Record<string, string> = {
-    cyan: "border-cyan-500/30 hover:border-cyan-400/60 hover:bg-cyan-500/[0.07]",
-    teal: "border-teal-500/30 hover:border-teal-400/60 hover:bg-teal-500/[0.07]",
-    violet: "border-violet-500/30 hover:border-violet-400/60 hover:bg-violet-500/[0.07]",
-    amber: "border-amber-500/30 hover:border-amber-400/60 hover:bg-amber-500/[0.07]",
-    red: "border-red-500/30 hover:border-red-400/60 hover:bg-red-500/[0.07]",
+    cyan: "border-cyan-500/30 hover:border-cyan-400/70 hover:bg-cyan-50 dark:hover:bg-[#0b2b48]/60 hover:shadow-lg hover:shadow-cyan-500/5",
+    teal: "border-teal-500/30 hover:border-teal-400/70 hover:bg-teal-50 dark:hover:bg-[#082420]/60 hover:shadow-lg hover:shadow-teal-500/5",
+    violet: "border-violet-500/30 hover:border-violet-400/70 hover:bg-violet-50 dark:hover:bg-[#1a1438]/60 hover:shadow-lg hover:shadow-violet-500/5",
+    amber: "border-amber-500/30 hover:border-amber-400/70 hover:bg-amber-50 dark:hover:bg-[#241c09]/60 hover:shadow-lg hover:shadow-amber-500/5",
+    red: "border-red-500/30 hover:border-red-400/70 hover:bg-red-50 dark:hover:bg-[#2c0f16]/60 hover:shadow-lg hover:shadow-red-500/5",
   };
   const iconTones: Record<string, string> = {
-    cyan: "bg-cyan-500/15 text-cyan-300", teal: "bg-teal-500/15 text-teal-300",
-    violet: "bg-violet-500/15 text-violet-300", amber: "bg-amber-500/15 text-amber-300",
-    red: "bg-red-500/15 text-red-300",
+    cyan: "bg-cyan-50 dark:bg-[#0b253b] text-cyan-800 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/30",
+    teal: "bg-teal-50 dark:bg-[#082420] text-teal-800 dark:text-[#2ee0bd] border border-teal-200 dark:border-teal-500/30",
+    violet: "bg-violet-50 dark:bg-[#1a1438] text-violet-800 dark:text-violet-300 border border-violet-200 dark:border-violet-500/30",
+    amber: "bg-amber-50 dark:bg-[#241c09] text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30",
+    red: "bg-red-50 dark:bg-[#2c0f16] text-red-800 dark:text-red-300 border border-red-200 dark:border-red-500/30",
   };
   return (
-    <button onClick={onClick} disabled={disabled || busy} className={`flex flex-col rounded-xl border bg-card p-4 text-left transition-all disabled:opacity-50 ${tones[tone]}`}>
+    <button onClick={onClick} disabled={disabled || busy} className={`flex flex-col rounded-2xl border border-slate-200 dark:border-border/60 bg-slate-50 dark:bg-[#07101e] p-4 text-left transition-all duration-200 disabled:opacity-50 ${tones[tone]}`}>
       <div className="flex items-center justify-between">
-        <span className={`rounded-lg p-2 ${iconTones[tone]}`}>{busy ? <Loader2 size={16} className="animate-spin" /> : icon}</span>
+        <span className={`rounded-xl p-2.5 ${iconTones[tone]}`}>{busy ? <Loader2 size={16} className="animate-spin" /> : icon}</span>
       </div>
-      <p className="mt-3 text-[13px] font-semibold text-foreground">{title}</p>
-      <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{desc}</p>
+      <p className="mt-3 text-[13px] font-bold text-slate-900 dark:text-white">{title}</p>
+      <p className="mt-1 text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">{desc}</p>
     </button>
   );
 }
 
 function CountTile({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
+    <div className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#0d1828] p-3.5 shadow-sm">
       <div className="flex items-center justify-between">
-        <p className="text-[9.5px] font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-        <span className="text-cyan-300/70">{icon}</span>
+        <p className="text-[9.5px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
+        <span className="text-teal-600 dark:text-cyan-300">{icon}</span>
       </div>
-      <p className="mt-1 font-mono text-xl font-semibold">{fmt.int(value)}</p>
+      <p className="mt-1.5 font-mono text-xl font-bold text-slate-900 dark:text-white">{fmt.int(value)}</p>
     </div>
   );
 }

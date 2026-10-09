@@ -21,6 +21,117 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Building2, Search, Plus, MapPin, Coins, Network, ShieldCheck, ScrollText, Boxes, Loader2, BadgeCheck, Ban, Check } from "lucide-react";
 
+const DEFAULT_ORGS: OrganizationSummary[] = [
+  {
+    id: "org-apollo",
+    name: "Apollo Demo Hospital",
+    slug: "hospital-a",
+    type: "Hospital",
+    industry: "Healthcare",
+    location: "Chennai, IN",
+    status: "ACTIVE",
+    verification: "VERIFIED",
+    description: "Synthetic demo hospital network with an oncology research division.",
+    walletAddress: "0x4a7e93f821c0b3d1",
+    activeModels: 3,
+    trainingRounds: 16,
+    contributionScore: 1.9,
+    rewardBalance: 3200,
+    datasets: 1,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "org-aiims",
+    name: "AIIMS Demo Center",
+    slug: "hospital-b",
+    type: "Hospital",
+    industry: "Healthcare",
+    location: "New Delhi, IN",
+    status: "ACTIVE",
+    verification: "VERIFIED",
+    description: "Synthetic demo medical research center focused on diagnostic biomarkers.",
+    walletAddress: "0x8f2d1e04a79b3c58",
+    activeModels: 3,
+    trainingRounds: 16,
+    contributionScore: 1.28,
+    rewardBalance: 2800,
+    datasets: 1,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "org-max",
+    name: "Max Demo Research Lab",
+    slug: "hospital-c",
+    type: "Research Institution",
+    industry: "Healthcare",
+    location: "Mumbai, IN",
+    status: "ACTIVE",
+    verification: "VERIFIED",
+    description: "Synthetic demo clinical research lab for patient record evaluation.",
+    walletAddress: "0x12c4b8e930f7a5d1",
+    activeModels: 3,
+    trainingRounds: 16,
+    contributionScore: 0.98,
+    rewardBalance: 2100,
+    datasets: 1,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "org-hdfc",
+    name: "HDFC Demo Bank",
+    slug: "bank-a",
+    type: "Bank",
+    industry: "Finance",
+    location: "Mumbai, IN",
+    status: "ACTIVE",
+    verification: "VERIFIED",
+    description: "Synthetic demo retail bank monitoring card fraud telemetry.",
+    walletAddress: "0x99a3e210b48c7f3e",
+    activeModels: 3,
+    trainingRounds: 16,
+    contributionScore: 1.21,
+    rewardBalance: 2450,
+    datasets: 1,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "org-icici",
+    name: "ICICI Demo Bank",
+    slug: "bank-b",
+    type: "Bank",
+    industry: "Finance",
+    location: "Hyderabad, IN",
+    status: "ACTIVE",
+    verification: "VERIFIED",
+    description: "Synthetic demo universal bank with digital payments telemetry.",
+    walletAddress: "0x53d820f4c91a3b7e",
+    activeModels: 3,
+    trainingRounds: 16,
+    contributionScore: 2.04,
+    rewardBalance: 3600,
+    datasets: 1,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "org-green",
+    name: "Green Valley Farm Group",
+    slug: "farm-a",
+    type: "Agricultural Organization",
+    industry: "Agriculture",
+    location: "Nashik, IN",
+    status: "ACTIVE",
+    verification: "VERIFIED",
+    description: "Synthetic demo farmer collective optimizing regional crop yield.",
+    walletAddress: "0x37e90c812d4b6a1f",
+    activeModels: 2,
+    trainingRounds: 12,
+    contributionScore: 0.64,
+    rewardBalance: 1400,
+    datasets: 1,
+    createdAt: new Date().toISOString(),
+  },
+];
+
 export function OrganizationsView() {
   const { user } = useAppStore();
   const [q, setQ] = useState("");
@@ -31,9 +142,11 @@ export function OrganizationsView() {
   const { data, isLoading } = useQuery({
     queryKey: ["orgs", q, industry, status, verification],
     queryFn: () => orgsApi.list({ q: q || undefined, industry, status, verification }),
+    staleTime: 30000,
   });
 
-  const orgs = data?.organizations ?? [];
+  const rawOrgs = data?.organizations;
+  const orgs = (rawOrgs && rawOrgs.length > 0) ? rawOrgs : (isLoading ? [] : DEFAULT_ORGS);
   const canCreate = user?.role === "ADMIN";
 
   return (
@@ -72,32 +185,48 @@ export function OrganizationsView() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {orgs.map((o) => (
-            <Card key={o.id} className="group cursor-pointer transition-colors hover:border-cyan-500/40" onClick={() => navigate("organization", o.id)}>
+            <Card
+              key={o.id}
+              className="group cursor-pointer rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828] transition-all duration-200 hover:-translate-y-1 hover:border-teal-400/50 hover:shadow-xl hover:shadow-teal-500/5"
+              onClick={() => navigate("organization", o.id)}
+            >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate text-[15px] font-semibold">{o.name}</p>
-                    <p className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground"><MapPin size={10} /> {o.location} · {o.industry}</p>
+                    <p className="truncate text-[15px] font-bold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-cyan-300 transition-colors">{o.name}</p>
+                    <p className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400"><MapPin size={10} /> {o.location} · {o.industry}</p>
                   </div>
                   <StatusBadge status={o.status} />
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-[11.5px]">
-                  <span className="text-muted-foreground">Active models <span className="ml-1 font-mono text-foreground">{o.activeModels}</span></span>
-                  <span className="text-muted-foreground">Training rounds <span className="ml-1 font-mono text-foreground">{o.trainingRounds}</span></span>
-                  <span className="text-muted-foreground">Contribution <span className="ml-1 font-mono text-teal-300">{o.contributionScore.toFixed(2)}</span></span>
-                  <span className="text-muted-foreground">Rewards <span className="ml-1 font-mono text-amber-300">{o.rewardBalance.toFixed(0)}</span></span>
+                <div className="mt-4 grid grid-cols-2 gap-2 text-[11.5px]">
+                  <div className="rounded-xl border border-slate-200 dark:border-border/50 bg-slate-50 dark:bg-[#07101e] p-2.5">
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium">Active models</span>
+                    <span className="font-mono text-[13px] font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{o.activeModels}</span>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 dark:border-border/50 bg-slate-50 dark:bg-[#07101e] p-2.5">
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium">Training rounds</span>
+                    <span className="font-mono text-[13px] font-bold text-slate-800 dark:text-slate-200 mt-0.5 block">{o.trainingRounds}</span>
+                  </div>
+                  <div className="rounded-xl border border-teal-200 dark:border-teal-500/25 bg-teal-50 dark:bg-[#082223] p-2.5">
+                    <span className="text-[10px] text-teal-700 dark:text-teal-400 block font-medium">Contribution</span>
+                    <span className="font-mono text-[13px] font-bold text-teal-800 dark:text-[#2ee0bd] mt-0.5 block">{o.contributionScore.toFixed(2)}</span>
+                  </div>
+                  <div className="rounded-xl border border-amber-200 dark:border-amber-500/25 bg-amber-50 dark:bg-[#241c09] p-2.5">
+                    <span className="text-[10px] text-amber-700 dark:text-amber-400 block font-medium">Rewards</span>
+                    <span className="font-mono text-[13px] font-bold text-amber-800 dark:text-amber-300 mt-0.5 block">{o.rewardBalance.toFixed(0)} DATA</span>
+                  </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between">
+                <div className="mt-4 flex items-center justify-between border-t border-slate-100 dark:border-border/40 pt-3">
                   <div className="flex items-center gap-1.5">
                     {o.verification === "VERIFIED" ? (
-                      <span className="flex items-center gap-1 text-[10.5px] text-emerald-400"><BadgeCheck size={12} /> Verified</span>
+                      <span className="flex items-center gap-1 text-[10.5px] font-semibold text-emerald-600 dark:text-emerald-400"><BadgeCheck size={13} /> Verified</span>
                     ) : (
-                      <span className="text-[10.5px] text-amber-400">{o.verification.toLowerCase()}</span>
+                      <span className="text-[10.5px] font-medium text-amber-600 dark:text-amber-400">{o.verification.toLowerCase()}</span>
                     )}
                   </div>
-                  <span className="font-mono text-[9px] text-muted-foreground">{o.walletAddress?.slice(0, 12)}…</span>
+                  <span className="font-mono text-[10px] text-slate-400">{o.walletAddress?.slice(0, 12)}…</span>
                 </div>
               </CardContent>
             </Card>
@@ -389,9 +518,9 @@ export function OrganizationDetailView({ id }: { id: string }) {
 
 function OrgStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <p className="text-[9.5px] font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className="mt-1 font-mono text-[15px] font-semibold">{value}</p>
+    <div className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#0d1828] p-3.5 shadow-sm">
+      <p className="text-[9.5px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
+      <p className="mt-1 font-mono text-[16px] font-bold text-slate-900 dark:text-white">{value}</p>
     </div>
   );
 }

@@ -200,12 +200,12 @@ export function BlockchainView() {
 
 function NetStat({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
+    <div className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#0d1828] p-3.5 transition-all hover:border-amber-500/40">
       <div className="flex items-center justify-between">
-        <p className="text-[9.5px] font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-        <span className="text-amber-300/70">{icon}</span>
+        <p className="text-[9.5px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{label}</p>
+        <span className="text-amber-500 dark:text-amber-400">{icon}</span>
       </div>
-      <p className="mt-1 font-mono text-[15px] font-semibold text-foreground">{value}</p>
+      <p className="mt-1 font-mono text-[16px] font-extrabold text-slate-900 dark:text-white">{value}</p>
     </div>
   );
 }

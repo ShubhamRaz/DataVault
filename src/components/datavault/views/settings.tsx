@@ -75,53 +75,53 @@ export function SettingsView() {
 
       {isLoading ? <Skeleton className="h-64" /> : (
         <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold"><ShieldCheck size={15} className="text-emerald-300" /> Privacy mode</CardTitle>
+          <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
+            <CardHeader className="border-b border-slate-200 dark:border-[#1b3046]/60 pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white"><ShieldCheck size={15} className="text-emerald-600 dark:text-emerald-300" /> Privacy mode</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border border-border bg-background/40 p-4">
+            <CardContent className="space-y-4 pt-5">
+              <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#07101e] p-4">
                 <div>
-                  <Label className="text-[13px]">DEMO mode</Label>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">Fast, deterministic rounds. Updates travel masked (zero-sum) without GCM sealing.</p>
+                  <Label className="text-[13px] font-semibold text-slate-900 dark:text-white">DEMO mode</Label>
+                  <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">Fast, deterministic rounds. Updates travel masked (zero-sum) without GCM sealing.</p>
                 </div>
                 <Switch checked={privacyMode === "DEMO"} onCheckedChange={(v) => setPrivacyMode(v ? "DEMO" : "ENCRYPTION")} />
               </div>
-              <div className="flex items-center justify-between rounded-lg border border-border bg-background/40 p-4">
+              <div className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#07101e] p-4">
                 <div>
-                  <Label className="text-[13px]">ENCRYPTION mode</Label>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">Updates additionally sealed with AES-256-GCM before leaving participants. Both modes use secure aggregation.</p>
+                  <Label className="text-[13px] font-semibold text-slate-900 dark:text-white">ENCRYPTION mode</Label>
+                  <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">Updates additionally sealed with AES-256-GCM before leaving participants. Both modes use secure aggregation.</p>
                 </div>
                 <Switch checked={privacyMode === "ENCRYPTION"} onCheckedChange={(v) => setPrivacyMode(v ? "ENCRYPTION" : "DEMO")} />
               </div>
-              <p className="rounded-lg border border-violet-500/25 bg-violet-500/5 p-3 text-[11px] leading-relaxed text-violet-300/90">
+              <p className="rounded-xl border border-violet-200 dark:border-violet-500/25 bg-violet-50 dark:bg-[#1a1438]/60 p-3.5 text-[11px] leading-relaxed text-violet-800 dark:text-violet-200">
                 Production deployments: the Python ml-service implements TenSEAL/CKKS homomorphic encryption on selected update tensors (spec §64). The TS demo engine preserves the same API boundaries.
               </p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold">Reward pool & system</CardTitle>
+          <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
+            <CardHeader className="border-b border-slate-200 dark:border-[#1b3046]/60 pb-3">
+              <CardTitle className="text-sm font-semibold text-slate-900 dark:text-white">Reward pool & system</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-5">
               <div className="space-y-1.5">
-                <Label className="text-xs">Round reward pool (DATA tokens)</Label>
+                <Label className="text-xs text-slate-600 dark:text-slate-400 font-medium">Round reward pool (DATA tokens)</Label>
                 <Select value={rewardPool} onValueChange={setRewardPool}>
-                  <SelectTrigger className="bg-card"><SelectValue /></SelectTrigger>
-                  <SelectContent>
+                  <SelectTrigger className="bg-slate-50 dark:bg-[#07101e] border-slate-200 dark:border-[#1b3046] text-slate-800 dark:text-white"><SelectValue /></SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-[#0d1828] border-slate-200 dark:border-[#1b3046]">
                     {["500", "1000", "2000"].map((v) => <SelectItem key={v} value={v}>{v} DATA / round</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 {(data?.settings ?? []).filter((s) => !["privacy_mode", "round_reward_pool"].includes(s.key)).map((s) => (
-                  <div key={s.key} className="flex items-center justify-between rounded-lg border border-border/60 bg-background/40 px-3 py-2.5 text-[11.5px]">
+                  <div key={s.key} className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-border/50 bg-slate-50 dark:bg-[#07101e] px-3.5 py-2.5 text-[11.5px]">
                     <div>
-                      <p className="font-mono text-[10.5px] text-muted-foreground">{s.key}</p>
-                      <p className="text-[9.5px] text-muted-foreground/70">{s.description}</p>
+                      <p className="font-mono text-[10.5px] font-semibold text-cyan-700 dark:text-cyan-300">{s.key}</p>
+                      <p className="text-[9.5px] text-slate-500 dark:text-slate-400">{s.description}</p>
                     </div>
-                    <span className="max-w-[180px] truncate text-right font-medium text-foreground">{s.value}</span>
+                    <span className="max-w-[180px] truncate text-right font-mono font-medium text-slate-800 dark:text-white">{s.value}</span>
                   </div>
                 ))}
               </div>

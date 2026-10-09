@@ -18,6 +18,73 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import { Database, Search, ShieldAlert, ShieldCheck, FileLock2, Users, Loader2 } from "lucide-react";
 
+const DEFAULT_DATASETS = [
+  {
+    id: "ds-apollo",
+    name: "Apollo Oncology Biomarker Panel",
+    owner: { name: "Apollo Demo Hospital", slug: "hospital-a", industry: "Healthcare" },
+    industry: "Healthcare",
+    domain: "HEALTHCARE",
+    sampleCount: 1420,
+    featureCount: 30,
+    targetName: "malignancy_risk",
+    privacyClassification: "ENCRYPTED_UPDATES_ONLY",
+    status: "ACTIVE",
+    lastRoundNumber: 16,
+    metadataHash: "0x4b7f92a10c8e3d",
+    isDemo: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "ds-aiims",
+    name: "AIIMS Clinical Diagnostic Markers",
+    owner: { name: "AIIMS Demo Center", slug: "hospital-b", industry: "Healthcare" },
+    industry: "Healthcare",
+    domain: "HEALTHCARE",
+    sampleCount: 1680,
+    featureCount: 30,
+    targetName: "malignancy_risk",
+    privacyClassification: "ENCRYPTED_UPDATES_ONLY",
+    status: "ACTIVE",
+    lastRoundNumber: 16,
+    metadataHash: "0x89e2c4f107b3a9",
+    isDemo: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "ds-hdfc",
+    name: "HDFC Card Transaction Risk Stream",
+    owner: { name: "HDFC Demo Bank", slug: "bank-a", industry: "Finance" },
+    industry: "Finance",
+    domain: "FINANCE",
+    sampleCount: 5200,
+    featureCount: 28,
+    targetName: "fraud_score",
+    privacyClassification: "LOCAL_ONLY",
+    status: "ACTIVE",
+    lastRoundNumber: 16,
+    metadataHash: "0x2e91b4c78a05f3",
+    isDemo: true,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "ds-green",
+    name: "Green Valley Soil & Weather Yield Log",
+    owner: { name: "Green Valley Farm Group", slug: "farm-a", industry: "Agriculture" },
+    industry: "Agriculture",
+    domain: "AGRICULTURE",
+    sampleCount: 840,
+    featureCount: 18,
+    targetName: "yield_quintals_per_ha",
+    privacyClassification: "LOCAL_ONLY",
+    status: "ACTIVE",
+    lastRoundNumber: 12,
+    metadataHash: "0x6f38a901bd4e2c",
+    isDemo: true,
+    createdAt: new Date().toISOString(),
+  },
+];
+
 export function DatasetsView() {
   const { user } = useAppStore();
   const queryClient = useQueryClient();
@@ -29,13 +96,11 @@ export function DatasetsView() {
   const { data, isLoading } = useQuery({
     queryKey: ["datasets", q, domain, status],
     queryFn: () => datasetsApi.list({ q: q || undefined, domain, status }),
+    staleTime: 30000,
   });
 
-  const datasets = (data?.datasets as {
-    id: string; name: string; owner: { name: string; slug: string; industry: string };
-    industry: string; domain: string; sampleCount: number; featureCount: number; targetName: string;
-    privacyClassification: string; status: string; lastRoundNumber: number; metadataHash: string; isDemo: boolean; createdAt: string;
-  }[]) ?? [];
+  const rawDatasets = data?.datasets as typeof DEFAULT_DATASETS | undefined;
+  const datasets = (rawDatasets && rawDatasets.length > 0) ? rawDatasets : (isLoading ? [] : DEFAULT_DATASETS);
 
   const tryRawAccess = async (id: string) => {
     try {
@@ -76,8 +141,8 @@ export function DatasetsView() {
       />
 
       <div className="flex items-center gap-2 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.06] p-3.5">
-        <ShieldCheck size={16} className="shrink-0 text-emerald-400" />
-        <p className="text-[12px] text-emerald-200/90">
+        <ShieldCheck size={16} className="shrink-0 text-emerald-600 dark:text-emerald-400" />
+        <p className="text-[12px] text-emerald-800 dark:text-emerald-200/90">
           <span className="font-semibold">Raw data never leaves the data owner.</span> Datasets live in participant-local environments
           (<span className="font-mono text-[11px]">data/participants/&lt;org&gt;/data.csv</span>) — the registry stores metadata only. Try the raw-access button to see the guard in action.
         </p>
@@ -90,30 +155,30 @@ export function DatasetsView() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {datasets.map((d) => (
-            <Card key={d.id}>
+            <Card key={d.id} className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828] transition-all hover:border-teal-400/40">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate text-[14.5px] font-semibold">{d.name}</p>
-                    <button className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground hover:text-cyan-300" onClick={() => navigate("organization", d.owner.slug)}>
-                      <Users size={10} /> {d.owner.name}
+                    <p className="truncate text-[15px] font-bold text-slate-900 dark:text-white">{d.name}</p>
+                    <button className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-cyan-300" onClick={() => navigate("organization", d.owner.slug)}>
+                      <Users size={11} /> {d.owner.name}
                     </button>
                   </div>
                   <StatusBadge status={d.status} />
                 </div>
 
                 <div className="mt-3.5 grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-lg border border-border bg-background/40 p-1.5">
-                    <p className="text-[9px] uppercase text-muted-foreground">Records</p>
-                    <p className="font-mono text-[13px]">{fmt.int(d.sampleCount)}</p>
+                  <div className="rounded-xl border border-slate-200 dark:border-border/50 bg-slate-50 dark:bg-[#07101e] p-2">
+                    <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400">Records</p>
+                    <p className="font-mono text-[13px] font-bold text-slate-900 dark:text-white mt-0.5">{fmt.int(d.sampleCount)}</p>
                   </div>
-                  <div className="rounded-lg border border-border bg-background/40 p-1.5">
-                    <p className="text-[9px] uppercase text-muted-foreground">Features</p>
-                    <p className="font-mono text-[13px]">{d.featureCount}</p>
+                  <div className="rounded-xl border border-slate-200 dark:border-border/50 bg-slate-50 dark:bg-[#07101e] p-2">
+                    <p className="text-[9px] font-semibold uppercase text-slate-500 dark:text-slate-400">Features</p>
+                    <p className="font-mono text-[13px] font-bold text-slate-900 dark:text-white mt-0.5">{d.featureCount}</p>
                   </div>
-                  <div className="rounded-lg border border-border bg-background/40 p-1.5">
-                    <p className="text-[9px] uppercase text-muted-foreground">Last round</p>
-                    <p className="font-mono text-[13px]">{d.lastRoundNumber > 0 ? `#${d.lastRoundNumber}` : "—"}</p>
+                  <div className="rounded-xl border border-teal-200 dark:border-teal-500/30 bg-teal-50 dark:bg-[#082223] p-2">
+                    <p className="text-[9px] font-semibold uppercase text-teal-700 dark:text-teal-400">Last round</p>
+                    <p className="font-mono text-[13px] font-bold text-teal-800 dark:text-[#2ee0bd]">{d.lastRoundNumber > 0 ? `#${d.lastRoundNumber}` : "—"}</p>
                   </div>
                 </div>
 

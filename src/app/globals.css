@@ -47,79 +47,84 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* DataVault — dark navy enterprise theme (brand spec: dark/navy foundation, cyan/teal accents) */
+/* DataVault — Light & Dark themes aligned with Gurjot design system */
 :root {
   --radius: 0.625rem;
-  --background: #060a13;
-  --foreground: #e8eef9;
-  --card: #0b1322;
-  --card-foreground: #e8eef9;
-  --popover: #0e1729;
-  --popover-foreground: #e8eef9;
-  --primary: #22d3ee;
-  --primary-foreground: #04222b;
-  --secondary: #12203a;
-  --secondary-foreground: #cfe4f5;
-  --muted: #101a2e;
-  --muted-foreground: #8296b3;
-  --accent: #14b8a6;
-  --accent-foreground: #03211d;
-  --destructive: #f87171;
-  --destructive-foreground: #2a0a0a;
-  --border: #1b2942;
-  --input: #1b2942;
-  --ring: #22d3ee66;
-  --chart-1: #22d3ee;
-  --chart-2: #2dd4bf;
-  --chart-3: #818cf8;
-  --chart-4: #fbbf24;
-  --chart-5: #f472b6;
-  --sidebar: #081020;
-  --sidebar-foreground: #c8d6ec;
-  --sidebar-primary: #22d3ee;
-  --sidebar-primary-foreground: #04222b;
-  --sidebar-accent: #12203a;
-  --sidebar-accent-foreground: #e8eef9;
-  --sidebar-border: #16223a;
-  --sidebar-ring: #22d3ee66;
-  --cyan: #22d3ee;
-  --teal: #2dd4bf;
-  --glow: #22d3ee26;
+  --bg: #f7faff;
+  --background: #f7faff;
+  --foreground: #0c1738;
+  --card: #ffffff;
+  --card-foreground: #0c1738;
+  --popover: #ffffff;
+  --popover-foreground: #0c1738;
+  --primary: #10bfa8;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f6fb;
+  --secondary-foreground: #243452;
+  --muted: #f1f6fb;
+  --muted-foreground: #64748b;
+  --accent: #edf7f9;
+  --accent-foreground: #087e83;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #dce7f1;
+  --input: #dce7f1;
+  --ring: #10bfa866;
+  --chart-1: #10bfa8;
+  --chart-2: #18bde0;
+  --chart-3: #2f80ed;
+  --chart-4: #f59e0b;
+  --chart-5: #16b98a;
+  --sidebar: rgba(255, 255, 255, 0.96);
+  --sidebar-foreground: #243452;
+  --sidebar-primary: #10bfa8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #edf7f9;
+  --sidebar-accent-foreground: #087e83;
+  --sidebar-border: #dce7f1;
+  --sidebar-ring: #10bfa866;
+  --cyan: #18bde0;
+  --teal: #10bfa8;
+  --glow: rgba(16, 191, 168, 0.15);
 }
 
 .dark {
-  --background: #060a13;
-  --foreground: #e8eef9;
-  --card: #0b1322;
-  --card-foreground: #e8eef9;
-  --popover: #0e1729;
-  --popover-foreground: #e8eef9;
-  --primary: #22d3ee;
+  --bg: #07101e;
+  --background: #07101e;
+  --foreground: #eaf4ff;
+  --card: #0d1828;
+  --card-foreground: #eaf4ff;
+  --popover: #0d1828;
+  --popover-foreground: #eaf4ff;
+  --primary: #38e1cf;
   --primary-foreground: #04222b;
-  --secondary: #12203a;
-  --secondary-foreground: #cfe4f5;
-  --muted: #101a2e;
-  --muted-foreground: #8296b3;
-  --accent: #14b8a6;
-  --accent-foreground: #03211d;
+  --secondary: #101e31;
+  --secondary-foreground: #c8d6ec;
+  --muted: #101e31;
+  --muted-foreground: #8fa3ba;
+  --accent: #0b2b48;
+  --accent-foreground: #38e1cf;
   --destructive: #f87171;
   --destructive-foreground: #2a0a0a;
-  --border: #1b2942;
-  --input: #1b2942;
-  --ring: #22d3ee66;
-  --chart-1: #22d3ee;
-  --chart-2: #2dd4bf;
+  --border: #1b3046;
+  --input: #1b3046;
+  --ring: #38e1cf66;
+  --chart-1: #38e1cf;
+  --chart-2: #2ee0bd;
   --chart-3: #818cf8;
   --chart-4: #fbbf24;
   --chart-5: #f472b6;
-  --sidebar: #081020;
-  --sidebar-foreground: #c8d6ec;
-  --sidebar-primary: #22d3ee;
+  --sidebar: #07101e;
+  --sidebar-foreground: #8fa3ba;
+  --sidebar-primary: #38e1cf;
   --sidebar-primary-foreground: #04222b;
-  --sidebar-accent: #12203a;
-  --sidebar-accent-foreground: #e8eef9;
-  --sidebar-border: #16223a;
-  --sidebar-ring: #22d3ee66;
+  --sidebar-accent: #0b2b48;
+  --sidebar-accent-foreground: #38e1cf;
+  --sidebar-border: #16283b;
+  --sidebar-ring: #38e1cf66;
+  --cyan: #38e1cf;
+  --teal: #2ee0bd;
+  --glow: rgba(56, 225, 207, 0.15);
 }
 
 @layer base {
@@ -129,10 +134,31 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "ss01" on;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
   html {
     scroll-behavior: smooth;
   }
+}
+
+/* Card aesthetics aligned with Gurjot design */
+[data-slot="card"], .card-custom {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark [data-slot="card"], .dark .card-custom {
+  background: #0d1828;
+  border-color: #1b3046;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+[data-slot="card"]:hover, .card-custom:hover {
+  border-color: var(--primary);
+  box-shadow: 0 12px 30px var(--glow);
 }
 
 /* DataVault custom utilities */

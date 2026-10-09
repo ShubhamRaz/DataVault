@@ -79,7 +79,7 @@ export function LoginView({ mode, navigate: nav }: { mode: "login" | "register";
             <h2 className="mt-8 text-2xl font-bold leading-tight">
               Train together.
               <br />
-              <span className="bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">Share nothing.</span>
+              <span className="bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-cyan-300 dark:to-teal-300 bg-clip-text text-transparent">Share nothing.</span>
             </h2>
             <div className="mt-6 space-y-3">
               {[
@@ -89,7 +89,7 @@ export function LoginView({ mode, navigate: nav }: { mode: "login" | "register";
                 "100% synthetic demo data — zero risk",
               ].map((line) => (
                 <div key={line} className="flex items-center gap-2 text-[13px] text-muted-foreground">
-                  <ShieldCheck size={14} className="text-emerald-400" />
+                  <ShieldCheck size={14} className="text-emerald-600 dark:text-emerald-400" />
                   {line}
                 </div>
               ))}
@@ -104,7 +104,7 @@ export function LoginView({ mode, navigate: nav }: { mode: "login" | "register";
         <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-semibold">{mode === "login" ? "Sign in" : "Create account"}</h1>
-            <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 p-1.5 text-emerald-400">
+            <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 p-1.5 text-emerald-600 dark:text-emerald-400">
               <Lock size={14} />
             </div>
           </div>
@@ -174,7 +174,7 @@ export function LoginView({ mode, navigate: nav }: { mode: "login" | "register";
                   </button>
                 ))}
               </div>
-              <Button type="button" variant="outline" disabled={busy} onClick={quickDemo} className="mt-4 h-10 w-full border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20">
+              <Button type="button" variant="outline" disabled={busy} onClick={quickDemo} className="mt-4 h-10 w-full border-cyan-500/40 bg-cyan-500/10 text-teal-700 dark:text-cyan-300 hover:bg-cyan-500/20">
                 <Play size={14} /> One-click demo login (admin)
               </Button>
             </>
@@ -182,9 +182,9 @@ export function LoginView({ mode, navigate: nav }: { mode: "login" | "register";
 
           <p className="mt-5 text-center text-[12px] text-muted-foreground">
             {mode === "login" ? (
-              <>New to DataVault? <button onClick={() => (window.location.hash = "#/register")} className="font-medium text-cyan-300 hover:underline">Create an account</button></>
+              <>New to DataVault? <button onClick={() => (window.location.hash = "#/register")} className="font-medium text-teal-600 dark:text-cyan-300 hover:underline">Create an account</button></>
             ) : (
-              <>Already registered? <button onClick={() => (window.location.hash = "#/login")} className="font-medium text-cyan-300 hover:underline">Sign in</button></>
+              <>Already registered? <button onClick={() => (window.location.hash = "#/login")} className="font-medium text-teal-600 dark:text-cyan-300 hover:underline">Sign in</button></>
             )}
           </p>
           <p className="mt-2 text-center text-[11px] text-muted-foreground">

@@ -29,6 +29,57 @@ interface Listing {
   accessRequests?: { id: string; organization: string; status: string; message: string | null; createdAt: string }[];
 }
 
+const DEFAULT_LISTINGS: Listing[] = [
+  {
+    id: "list-1",
+    modelId: "model-cancer",
+    title: "Oncology Biomarker Risk Predictor (v1.4)",
+    description: "Multi-hospital federated model for early-stage oncology risk scoring with AES-256-GCM zero-sum gradient masking.",
+    useCase: "Early clinical oncology risk assessment",
+    industry: "Healthcare",
+    performance: 0.892,
+    privacyMethod: "HE + SECURE_AGG",
+    trainingRounds: 16,
+    price: 500,
+    accessPolicy: "REQUEST_ACCESS",
+    status: "ACTIVE",
+    participants: ["Apollo Demo Hospital", "AIIMS Demo Center", "Max Demo Research Lab"],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "list-2",
+    title: "Cross-Bank Card Fraud Scoring Model (v1.3)",
+    modelId: "model-fraud",
+    description: "High-precision digital transaction risk detector trained across multi-bank retail payment circles.",
+    useCase: "Anomalous digital payment & credit card fraud detection",
+    industry: "Finance",
+    performance: 0.915,
+    privacyMethod: "SECURE_AGGREGATION",
+    trainingRounds: 16,
+    price: 800,
+    accessPolicy: "REQUEST_ACCESS",
+    status: "ACTIVE",
+    participants: ["HDFC Demo Bank", "ICICI Demo Bank", "SBI Demo Regional"],
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "list-3",
+    title: "Regional Agronomic Crop Yield Estimator (v1.2)",
+    modelId: "model-crop",
+    description: "Multi-cooperative yield regression model optimized across regional agricultural field groups.",
+    useCase: "Regional harvest optimization and precision weather yield forecasting",
+    industry: "Agriculture",
+    performance: 0.834,
+    privacyMethod: "FEDERATED_AVERAGING",
+    trainingRounds: 12,
+    price: 0,
+    accessPolicy: "OPEN",
+    status: "ACTIVE",
+    participants: ["Green Valley Farm Group", "Deccan Agri Collective", "Punjab Farm Co-op"],
+    createdAt: new Date().toISOString(),
+  },
+];
+
 export function MarketplaceView() {
   const { user } = useAppStore();
   const [q, setQ] = useState("");
@@ -39,9 +90,11 @@ export function MarketplaceView() {
   const { data, isLoading } = useQuery({
     queryKey: ["marketplace", q, industry, privacyMethod, accessPolicy],
     queryFn: () => marketplaceApi.list({ q: q || undefined, industry, privacyMethod, accessPolicy }),
+    staleTime: 30000,
   });
 
-  const listings = (data?.listings as Listing[]) ?? [];
+  const rawListings = data?.listings as Listing[] | undefined;
+  const listings = (rawListings && rawListings.length > 0) ? rawListings : (isLoading ? [] : DEFAULT_LISTINGS);
   const canPublish = ["ADMIN", "ORG_ADMIN", "ML_OPERATOR"].includes(user?.role ?? "");
 
   return (
@@ -87,30 +140,34 @@ export function MarketplaceView() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {listings.map((l) => (
-            <Card key={l.id} className="group cursor-pointer transition-colors hover:border-teal-500/40" onClick={() => navigate("listing", l.id)}>
+            <Card
+              key={l.id}
+              className="group cursor-pointer rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828] transition-all duration-200 hover:-translate-y-1 hover:border-teal-400/50 hover:shadow-xl hover:shadow-teal-500/5"
+              onClick={() => navigate("listing", l.id)}
+            >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate text-[15px] font-semibold">{l.title}</p>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground">{l.industry} · {l.useCase.slice(0, 46)}{l.useCase.length > 46 ? "…" : ""}</p>
+                    <p className="truncate text-[15px] font-bold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-300 transition-colors">{l.title}</p>
+                    <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">{l.industry} · {l.useCase.slice(0, 46)}{l.useCase.length > 46 ? "…" : ""}</p>
                   </div>
                   <StatusBadge status={l.status} />
                 </div>
 
-                <p className="mt-3 line-clamp-2 text-[12px] leading-relaxed text-muted-foreground">{l.description}</p>
+                <p className="mt-3 line-clamp-2 text-[12px] leading-relaxed text-slate-600 dark:text-slate-400">{l.description}</p>
 
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/[0.06] p-2">
-                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Performance</p>
-                    <p className="font-mono text-[13px] font-semibold text-emerald-400">{l.model?.taskType === "REGRESSION" ? `R² ${l.performance.toFixed(2)}` : `${(l.performance * 100).toFixed(1)}%`}</p>
+                  <div className="rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-[#082420] p-2.5">
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Performance</p>
+                    <p className="font-mono text-[13px] font-bold text-emerald-800 dark:text-[#2ee0bd] mt-0.5">{l.model?.taskType === "REGRESSION" ? `R² ${l.performance.toFixed(2)}` : `${(l.performance * 100).toFixed(1)}%`}</p>
                   </div>
-                  <div className="rounded-lg border border-border bg-background/40 p-2">
-                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Rounds</p>
-                    <p className="font-mono text-[13px]">{l.trainingRounds}</p>
+                  <div className="rounded-xl border border-slate-200 dark:border-border/60 bg-slate-50 dark:bg-[#07101e] p-2.5">
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-500">Rounds</p>
+                    <p className="font-mono text-[13px] font-bold text-slate-800 dark:text-slate-300 mt-0.5">{l.trainingRounds}</p>
                   </div>
-                  <div className="rounded-lg border border-amber-500/25 bg-amber-500/[0.06] p-2">
-                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Price</p>
-                    <p className="font-mono text-[13px] font-semibold text-amber-300">{l.price === 0 ? "Free" : `${l.price} DATA`}</p>
+                  <div className="rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-[#241c09] p-2.5">
+                    <p className="text-[9px] font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-400">Price</p>
+                    <p className="font-mono text-[13px] font-bold text-amber-800 dark:text-amber-300 mt-0.5">{l.price === 0 ? "Free" : `${l.price} DATA`}</p>
                   </div>
                 </div>
 
@@ -282,9 +339,9 @@ export function ListingDetailView({ id }: { id: string }) {
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-4">
-          <Card>
+          <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
             <CardContent className="p-5">
-              <p className="text-[13px] leading-relaxed text-muted-foreground">{listing.description}</p>
+              <p className="text-[13px] leading-relaxed text-slate-700 dark:text-slate-300">{listing.description}</p>
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <Stat label="Performance" value={model.taskType === "REGRESSION" ? `R² ${listing.performance.toFixed(2)}` : `${(listing.performance * 100).toFixed(1)}%`} accent="emerald" />
                 <Stat label="Privacy method" value={listing.privacyMethod.replace(/_/g, " ")} accent="cyan" />
@@ -294,20 +351,20 @@ export function ListingDetailView({ id }: { id: string }) {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold">Performance history (federation rounds)</CardTitle></CardHeader>
+          <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
+            <CardHeader className="border-b border-slate-200 dark:border-[#1b3046]/60 pb-3"><CardTitle className="text-sm font-semibold text-slate-900 dark:text-white">Performance history (federation rounds)</CardTitle></CardHeader>
             <CardContent className="p-0">
               <table className="w-full text-[11.5px]">
-                <thead><tr className="border-b border-border text-left text-[9.5px] uppercase tracking-wider text-muted-foreground">
-                  <th className="px-4 py-2.5">Round</th><th className="px-4 py-2.5">Metric</th><th className="px-4 py-2.5">Δ</th><th className="px-4 py-2.5">Protected updates</th>
+                <thead><tr className="border-b border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#07101e]/60 text-left text-[9.5px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <th className="px-4 py-3 font-semibold">Round</th><th className="px-4 py-3 font-semibold">Metric</th><th className="px-4 py-3 font-semibold">Δ</th><th className="px-4 py-3 font-semibold">Protected updates</th>
                 </tr></thead>
                 <tbody>
                   {rounds.map((r) => (
-                    <tr key={r.roundNumber} className="border-b border-border/40 last:border-0">
-                      <td className="px-4 py-2.5 font-mono text-cyan-300">#{r.roundNumber}</td>
-                      <td className="px-4 py-2.5 font-mono">{model.taskType === "REGRESSION" ? `R² ${r.metricsAfter.toFixed(3)}` : `${(r.metricsAfter * 100).toFixed(1)}%`}</td>
-                      <td className={`px-4 py-2.5 font-mono ${r.improvement >= 0 ? "text-emerald-400" : "text-red-400"}`}>{r.improvement >= 0 ? "+" : ""}{(r.improvement * 100).toFixed(2)}</td>
-                      <td className="px-4 py-2.5 font-mono">{r.encryptedUpdates > 0 ? `🔒 ${r.encryptedUpdates}` : "masked"}</td>
+                    <tr key={r.roundNumber} className="border-b border-slate-100 dark:border-[#1b3046]/40 last:border-0">
+                      <td className="px-4 py-2.5 font-mono font-semibold text-teal-700 dark:text-cyan-300">#{r.roundNumber}</td>
+                      <td className="px-4 py-2.5 font-mono font-medium text-slate-900 dark:text-white">{model.taskType === "REGRESSION" ? `R² ${r.metricsAfter.toFixed(3)}` : `${(r.metricsAfter * 100).toFixed(1)}%`}</td>
+                      <td className={`px-4 py-2.5 font-mono font-bold ${r.improvement >= 0 ? "text-emerald-700 dark:text-[#2ee0bd]" : "text-red-500"}`}>{r.improvement >= 0 ? "+" : ""}{(r.improvement * 100).toFixed(2)}</td>
+                      <td className="px-4 py-2.5 font-mono text-teal-700 dark:text-cyan-200">{r.encryptedUpdates > 0 ? `🔒 ${r.encryptedUpdates}` : "masked"}</td>
                     </tr>
                   ))}
                 </tbody>

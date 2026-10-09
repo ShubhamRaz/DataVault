@@ -90,33 +90,33 @@ export function AuditView() {
       ) : entries.length === 0 ? (
         <EmptyState title="No audit entries match" hint="Adjust filters." icon={<ScrollText size={24} />} />
       ) : (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <ScrollText size={15} className="text-cyan-300" /> {entries.length} entries (latest first)
+        <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
+          <CardHeader className="border-b border-slate-200 dark:border-[#1b3046]/60 pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
+              <ScrollText size={15} className="text-teal-600 dark:text-cyan-300" /> {entries.length} entries (latest first)
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <div className="scroll-thin max-h-[560px] overflow-y-auto">
               <table className="w-full text-[11.5px]">
                 <thead>
-                  <tr className="border-b border-border text-left text-[9.5px] uppercase tracking-wider text-muted-foreground">
-                    <th className="px-4 py-2.5">Timestamp</th><th className="px-4 py-2.5">Actor</th><th className="px-4 py-2.5">Event</th>
-                    <th className="px-4 py-2.5">Resource</th><th className="px-4 py-2.5">Hash</th><th className="px-4 py-2.5">On-chain</th><th className="px-4 py-2.5">Status</th>
+                  <tr className="border-b border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#07101e]/60 text-left text-[9.5px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <th className="px-4 py-3 font-semibold">Timestamp</th><th className="px-4 py-3 font-semibold">Actor</th><th className="px-4 py-3 font-semibold">Event</th>
+                    <th className="px-4 py-3 font-semibold">Resource</th><th className="px-4 py-3 font-semibold">Hash</th><th className="px-4 py-3 font-semibold">On-chain</th><th className="px-4 py-3 font-semibold">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {entries.map((e) => (
-                    <tr key={e.id} className="border-b border-border/40 transition-colors hover:bg-cyan-500/[0.04]">
-                      <td className="whitespace-nowrap px-4 py-2.5 text-[10px] text-muted-foreground">{fmt.date(e.timestamp)}</td>
+                    <tr key={e.id} className="border-b border-slate-100 dark:border-[#1b3046]/40 transition-colors hover:bg-teal-500/[0.05]">
+                      <td className="whitespace-nowrap px-4 py-2.5 text-[10px] text-slate-500 dark:text-slate-400">{fmt.date(e.timestamp)}</td>
                       <td className="px-4 py-2.5">
-                        <p className="max-w-[160px] truncate font-medium">{e.actor}</p>
-                        {e.organization && <p className="max-w-[160px] truncate text-[9px] text-muted-foreground">{e.organization}</p>}
+                        <p className="max-w-[160px] truncate font-semibold text-slate-900 dark:text-white">{e.actor}</p>
+                        {e.organization && <p className="max-w-[160px] truncate text-[9px] text-slate-500 dark:text-slate-400">{e.organization}</p>}
                       </td>
-                      <td className="px-4 py-2.5"><span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[9.5px] font-medium text-cyan-200">{e.eventType}</span></td>
-                      <td className="max-w-[140px] truncate px-4 py-2.5 text-muted-foreground">{e.resource ?? "—"}</td>
-                      <td className="px-4 py-2.5 font-mono text-[9.5px] text-muted-foreground/70">{fmt.hash(e.hash, 8, 4)}</td>
-                      <td className="px-4 py-2.5 font-mono text-[9.5px] text-amber-300/80">{e.blockchainTxHash ? <span className="flex items-center gap-1"><Link2 size={9} /> {fmt.hash(e.blockchainTxHash, 8, 4)}</span> : "—"}</td>
+                      <td className="px-4 py-2.5"><span className="rounded-md border border-teal-200 dark:border-cyan-500/20 bg-teal-50 dark:bg-[#0b253b] px-2 py-0.5 font-mono text-[9.5px] font-semibold text-teal-800 dark:text-cyan-300">{e.eventType}</span></td>
+                      <td className="max-w-[140px] truncate px-4 py-2.5 text-slate-600 dark:text-slate-400">{e.resource ?? "—"}</td>
+                      <td className="px-4 py-2.5 font-mono text-[9.5px] text-slate-500 dark:text-slate-400">{fmt.hash(e.hash, 8, 4)}</td>
+                      <td className="px-4 py-2.5 font-mono text-[9.5px] text-amber-700 dark:text-amber-300">{e.blockchainTxHash ? <span className="flex items-center gap-1"><Link2 size={9} /> {fmt.hash(e.blockchainTxHash, 8, 4)}</span> : "—"}</td>
                       <td className="px-4 py-2.5"><StatusBadge status={e.status} /></td>
                     </tr>
                   ))}

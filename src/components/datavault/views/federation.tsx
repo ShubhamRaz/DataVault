@@ -210,38 +210,38 @@ export function FederationView() {
       />
 
       {/* Model summary + controls */}
-      <Card>
-        <CardContent className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center">
+      <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
+        <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center">
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-sm font-semibold">{selected?.modelName}</p>
+              <p className="text-[15px] font-bold text-slate-900 dark:text-white">{selected?.modelName}</p>
               <StatusBadge status={running ? "RUNNING" : selected?.status ?? "ACTIVE"} />
               <PrivacyBadge mode={privacyMode} />
-              <span className="rounded-md bg-muted px-2 py-0.5 font-mono text-[10px] text-muted-foreground">{selected?.version}</span>
+              <span className="rounded-md border border-slate-200 dark:border-[#1b3046] bg-slate-100 dark:bg-[#07101e] px-2 py-0.5 font-mono text-[10px] text-slate-700 dark:text-slate-300">{selected?.version}</span>
             </div>
-            <div className="mt-2.5 flex flex-wrap items-center gap-4 text-[12px]">
-              <span className="text-muted-foreground">Silo baseline <span className="font-mono text-foreground">{selected?.taskType === "REGRESSION" ? `R² ${selected?.baselineAccuracy.toFixed(3)}` : `${((selected?.baselineAccuracy ?? 0) * 100).toFixed(1)}%`}</span></span>
-              <span className="text-muted-foreground">Federated <span className="font-mono text-emerald-400">{selected?.taskType === "REGRESSION" ? `R² ${selected?.currentAccuracy.toFixed(3)}` : `${((selected?.currentAccuracy ?? 0) * 100).toFixed(1)}%`}</span></span>
-              <span className="font-mono text-[10px] text-emerald-400">
+            <div className="mt-3 flex flex-wrap items-center gap-4 text-[12px]">
+              <span className="text-slate-500 dark:text-slate-400">Silo baseline <span className="font-mono text-slate-800 dark:text-slate-200">{selected?.taskType === "REGRESSION" ? `R² ${selected?.baselineAccuracy.toFixed(3)}` : `${((selected?.baselineAccuracy ?? 0) * 100).toFixed(1)}%`}</span></span>
+              <span className="text-slate-500 dark:text-slate-400">Federated <span className="font-mono font-bold text-emerald-700 dark:text-[#2ee0bd]">{selected?.taskType === "REGRESSION" ? `R² ${selected?.currentAccuracy.toFixed(3)}` : `${((selected?.currentAccuracy ?? 0) * 100).toFixed(1)}%`}</span></span>
+              <span className="rounded-md border border-emerald-200 dark:border-emerald-500/25 bg-emerald-50 dark:bg-[#082420] px-2 py-0.5 font-mono text-[11px] font-semibold text-emerald-800 dark:text-[#2ee0bd]">
                 +{(((selected?.currentAccuracy ?? 0) - (selected?.baselineAccuracy ?? 0)) * 100).toFixed(1)} pts from federation
               </span>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <Label className="text-[11px] text-muted-foreground">Rounds</Label>
+              <Label className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Rounds</Label>
               <Select value={roundsToRun} onValueChange={setRoundsToRun} disabled={running}>
-                <SelectTrigger className="h-8 w-16 bg-card"><SelectValue /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="h-8 w-16 bg-slate-50 dark:bg-[#07101e] border-slate-200 dark:border-[#1b3046] text-slate-800 dark:text-white"><SelectValue /></SelectTrigger>
+                <SelectContent className="bg-white dark:bg-[#0d1828] border-slate-200 dark:border-[#1b3046]">
                   {["1", "3", "5"].map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5 rounded-xl border border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#07101e] p-2.5">
               <Switch id="privacy-mode" checked={privacyMode === "ENCRYPTION"} onCheckedChange={(v) => setPrivacyMode(v ? "ENCRYPTION" : "DEMO")} disabled={running} />
               <div>
-                <Label htmlFor="privacy-mode" className="text-[11px]">{privacyMode === "ENCRYPTION" ? "ENCRYPTION (AES-256-GCM)" : "DEMO (masked)"}</Label>
-                <p className="text-[9px] text-muted-foreground">both modes use zero-sum secure aggregation</p>
+                <Label htmlFor="privacy-mode" className="text-[11px] font-semibold text-slate-800 dark:text-slate-200">{privacyMode === "ENCRYPTION" ? "ENCRYPTION (AES-256-GCM)" : "DEMO (masked)"}</Label>
+                <p className="text-[9.5px] text-slate-500 dark:text-slate-400">zero-sum secure aggregation</p>
               </div>
             </div>
           </div>
@@ -250,17 +250,17 @@ export function FederationView() {
 
       <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
         {/* Network visualization */}
-        <Card className="overflow-hidden">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <Network size={15} className="text-cyan-300" /> Live network
-              <span className="ml-auto flex items-center gap-1.5 text-[10px] font-normal text-muted-foreground">
-                <Radio size={11} className={running ? "text-cyan-300 animate-pulse" : "text-muted-foreground"} />
+        <Card className="overflow-hidden rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
+          <CardHeader className="border-b border-slate-200 dark:border-[#1b3046]/60 pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
+              <Network size={15} className="text-teal-600 dark:text-cyan-300" /> Live network
+              <span className="ml-auto flex items-center gap-1.5 text-[10px] font-normal text-slate-500 dark:text-slate-400">
+                <Radio size={11} className={running ? "text-cyan-300 animate-pulse" : "text-slate-400"} />
                 {running ? "streaming live events" : "idle — start a round"}
               </span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <NetworkDiagram
               network={selected}
               participantStates={participantStates}
@@ -270,17 +270,17 @@ export function FederationView() {
         </Card>
 
         {/* Event stream */}
-        <Card className="flex flex-col">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <Radio size={15} className={running ? "animate-pulse text-cyan-300" : "text-muted-foreground"} /> Live event stream
-              <span className="ml-auto font-mono text-[10px] font-normal text-muted-foreground">{events.length} events</span>
+        <Card className="flex flex-col rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
+          <CardHeader className="border-b border-slate-200 dark:border-[#1b3046]/60 pb-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
+              <Radio size={15} className={running ? "animate-pulse text-cyan-300" : "text-slate-400"} /> Live event stream
+              <span className="ml-auto font-mono text-[10px] font-medium text-teal-600 dark:text-cyan-300">{events.length} events</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 p-0">
-            <div ref={eventsRef} className="scroll-thin h-80 overflow-y-auto border-t border-border/60 bg-background/40 px-3 py-2 font-mono text-[11px] leading-relaxed">
+            <div ref={eventsRef} className="scroll-thin h-80 overflow-y-auto bg-slate-50 dark:bg-[#07101e]/80 px-3.5 py-2.5 font-mono text-[11px] leading-relaxed">
               {events.length === 0 && (
-                <p className="py-8 text-center text-muted-foreground">Waiting for federation events… start a round to begin.</p>
+                <p className="py-8 text-center text-slate-500">Waiting for federation events… start a round to begin.</p>
               )}
               <AnimatePresence initial={false}>
                 {events.slice(-80).map((e, i) => (
@@ -288,11 +288,11 @@ export function FederationView() {
                     key={`${e.timestamp}-${i}`}
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="flex gap-2 border-b border-border/30 py-1 last:border-0"
+                    className="flex gap-2.5 border-b border-slate-200 dark:border-[#1b3046]/40 py-1.5 last:border-0"
                   >
-                    <span className="shrink-0 text-muted-foreground/60">{new Date(e.timestamp).toLocaleTimeString("en-IN", { hour12: false })}</span>
+                    <span className="shrink-0 text-slate-500">{new Date(e.timestamp).toLocaleTimeString("en-IN", { hour12: false })}</span>
                     <span className={`shrink-0 font-semibold ${eventColor(e.type)}`}>{e.type}</span>
-                    <span className="min-w-0 flex-1 text-foreground/80">{e.message}</span>
+                    <span className="min-w-0 flex-1 text-slate-700 dark:text-slate-300">{e.message}</span>
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -302,11 +302,11 @@ export function FederationView() {
       </div>
 
       {/* Phase timeline */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm font-semibold">Round phases</CardTitle>
+      <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
+        <CardHeader className="border-b border-slate-200 dark:border-[#1b3046]/60 pb-3">
+          <CardTitle className="text-sm font-semibold text-slate-900 dark:text-white">Round phases</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-4">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-6 lg:grid-cols-11">
             {PHASES.map((p, i) => {
               const active = running && livePhase === i;
@@ -314,18 +314,18 @@ export function FederationView() {
               return (
                 <div
                   key={p.key}
-                  className={`flex flex-col items-center gap-1 rounded-lg border px-2 py-2.5 text-center transition-all ${
+                  className={`flex flex-col items-center gap-1.5 rounded-xl border px-2 py-3 text-center transition-all ${
                     active
-                      ? "border-cyan-400/60 bg-cyan-500/15 shadow-[0_0_18px_rgba(34,211,238,0.25)]"
+                      ? "border-teal-500 bg-teal-50 text-teal-800 shadow-md ring-1 ring-teal-400 dark:border-cyan-400/80 dark:bg-[#0b2b48] dark:text-white dark:ring-cyan-400"
                       : done
-                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-                      : "border-border bg-card text-muted-foreground"
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-[#082420] dark:text-emerald-300"
+                      : "border-slate-200 bg-slate-50 text-slate-600 dark:border-[#1b3046] dark:bg-[#07101e] dark:text-slate-400"
                   }`}
                 >
-                  <span className={active ? "text-cyan-300" : done ? "text-emerald-400" : "text-muted-foreground/50"}>{p.icon}</span>
-                  <span className="text-[9.5px] font-medium leading-tight">{p.label}</span>
-                  {done && !active && <span className="text-[8px] text-emerald-400">✓</span>}
-                  {active && <span className="pulse-dot h-1 w-1 rounded-full bg-cyan-300" />}
+                  <span className={active ? "text-teal-700 dark:text-cyan-300" : done ? "text-emerald-700 dark:text-emerald-400" : "text-slate-500"}>{p.icon}</span>
+                  <span className="text-[9.5px] font-semibold leading-tight">{p.label}</span>
+                  {done && !active && <span className="text-[9px] text-emerald-700 dark:text-[#2ee0bd] font-bold">✓</span>}
+                  {active && <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-teal-500 dark:bg-cyan-300" />}
                 </div>
               );
             })}
@@ -334,11 +334,11 @@ export function FederationView() {
       </Card>
 
       {/* Round history */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-            <Layers size={15} className="text-cyan-300" /> Round history
-            <span className="ml-auto text-[10px] font-normal text-muted-foreground">click a round for details</span>
+      <Card className="rounded-2xl border border-slate-200 dark:border-[#1b3046] bg-white dark:bg-[#0d1828]">
+        <CardHeader className="border-b border-slate-200 dark:border-[#1b3046]/60 pb-3">
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
+            <Layers size={15} className="text-teal-600 dark:text-cyan-300" /> Round history
+            <span className="ml-auto text-[10px] font-normal text-slate-500 dark:text-slate-400">click a round for details</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -346,16 +346,16 @@ export function FederationView() {
             <div className="scroll-thin max-h-96 overflow-y-auto">
               <table className="w-full text-[12px]">
                 <thead>
-                  <tr className="border-b border-border text-left text-[10px] uppercase tracking-wider text-muted-foreground">
-                    <th className="px-4 py-2.5">Round</th>
-                    <th className="px-4 py-2.5">Model</th>
-                    <th className="px-4 py-2.5">Before</th>
-                    <th className="px-4 py-2.5">After</th>
-                    <th className="px-4 py-2.5">Δ</th>
-                    <th className="px-4 py-2.5">Contributions</th>
-                    <th className="px-4 py-2.5">Rewards</th>
-                    <th className="px-4 py-2.5">Mode</th>
-                    <th className="px-4 py-2.5">Status</th>
+                  <tr className="border-b border-slate-200 dark:border-[#1b3046] bg-slate-50 dark:bg-[#07101e]/60 text-left text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <th className="px-4 py-3 font-semibold">Round</th>
+                    <th className="px-4 py-3 font-semibold">Model</th>
+                    <th className="px-4 py-3 font-semibold">Before</th>
+                    <th className="px-4 py-3 font-semibold">After</th>
+                    <th className="px-4 py-3 font-semibold">Δ</th>
+                    <th className="px-4 py-3 font-semibold">Contributions</th>
+                    <th className="px-4 py-3 font-semibold">Rewards</th>
+                    <th className="px-4 py-3 font-semibold">Mode</th>
+                    <th className="px-4 py-3 font-semibold">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -363,15 +363,15 @@ export function FederationView() {
                     <tr
                       key={r.id}
                       onClick={() => setRoundDetailId(r.id)}
-                      className="cursor-pointer border-b border-border/40 transition-colors hover:bg-cyan-500/5"
+                      className="cursor-pointer border-b border-slate-100 dark:border-[#1b3046]/40 transition-colors hover:bg-teal-500/[0.06]"
                     >
-                      <td className="px-4 py-2.5 font-mono text-cyan-300">#{r.roundNumber}</td>
-                      <td className="px-4 py-2.5">{r.model.name}</td>
-                      <td className="px-4 py-2.5 font-mono text-muted-foreground"><PrimaryMetric taskType={r.model.taskType} value={r.metricsBefore} /></td>
-                      <td className="px-4 py-2.5 font-mono"><PrimaryMetric taskType={r.model.taskType} value={r.metricsAfter} /></td>
-                      <td className={`px-4 py-2.5 font-mono ${r.improvement >= 0 ? "text-emerald-400" : "text-red-400"}`}>{r.improvement >= 0 ? "+" : ""}{(r.improvement * 100).toFixed(2)}</td>
-                      <td className="px-4 py-2.5 text-muted-foreground">{r.contributions.length} scored</td>
-                      <td className="px-4 py-2.5 font-mono text-amber-300">{r.rewards.reduce((s, w) => s + w.amount, 0).toFixed(0)} DATA</td>
+                      <td className="px-4 py-2.5 font-mono font-semibold text-teal-700 dark:text-cyan-300">#{r.roundNumber}</td>
+                      <td className="px-4 py-2.5 font-medium text-slate-900 dark:text-white">{r.model.name}</td>
+                      <td className="px-4 py-2.5 font-mono text-slate-500 dark:text-slate-400"><PrimaryMetric taskType={r.model.taskType} value={r.metricsBefore} /></td>
+                      <td className="px-4 py-2.5 font-mono font-semibold text-slate-900 dark:text-white"><PrimaryMetric taskType={r.model.taskType} value={r.metricsAfter} /></td>
+                      <td className={`px-4 py-2.5 font-mono font-bold ${r.improvement >= 0 ? "text-emerald-700 dark:text-[#2ee0bd]" : "text-red-500"}`}>{r.improvement >= 0 ? "+" : ""}{(r.improvement * 100).toFixed(2)}</td>
+                      <td className="px-4 py-2.5 text-slate-500 dark:text-slate-400">{r.contributions.length} scored</td>
+                      <td className="px-4 py-2.5 font-mono font-bold text-amber-700 dark:text-amber-300">{r.rewards.reduce((s, w) => s + w.amount, 0).toFixed(0)} DATA</td>
                       <td className="px-4 py-2.5"><PrivacyBadge mode={r.encryptedUpdates > 0 ? "ENCRYPTION" : "DEMO"} /></td>
                       <td className="px-4 py-2.5"><StatusBadge status={r.status} /></td>
                     </tr>
